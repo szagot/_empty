@@ -1,0 +1,35 @@
+.container {
+    text-align: center;
+    top: 0;
+    left: 0;
+}
+
+#loginfrm {
+    display: block;
+    max-width: 320px;
+    margin: 10% auto;
+    padding: 15px 20px;
+    text-align: left;
+    background: #f4f4f4;
+    background: linear-gradient(#f4f4f4, #fcfcfc);
+    border: 1px solid #eee;
+}
+
+#loginfrm .text {
+    width: 100%;
+    margin: 1% 0 3%;
+}
+
+#loginfrm .btn {
+    margin-top: 4%;
+}
+
+#loginfrm h1 {
+    font-size: 1.4em;
+    color: #666;
+    margin-bottom: 6%;
+}
+
+#loginfrm .erro {
+    margin: 6% 0;
+}

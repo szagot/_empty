@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Área de testes - Mater comentado se não for haver testes
+# RewriteRule ^_testes/?(.*)$ _testes/$1 [NC,L]
+
+# Área Pública
+RewriteRule ^public/(.*)?$ public/$1 [NC,L]
+
+# Envia todo mundo para o index.php
+RewriteRule ^/?.*$ index.php [NC,L]

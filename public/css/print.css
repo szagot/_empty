@@ -1,0 +1,45 @@
+@page {
+    orphans: 3;
+    widows: 3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 11pt;
+    font-family: Arial, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 11pt;
+    color: #000;
+}
+
+table, tr, td {
+    border-collapse: collapse;
+}
+
+table {
+    width: 100%;
+    page-break-inside: auto;
+    page-break-after: always;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tfoot {
+    display: table-footer-group;
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto
+}

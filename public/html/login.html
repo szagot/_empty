@@ -1,0 +1,22 @@
+<form id="loginfrm" action="{{raiz}}login" method="post">
+    <h1>Login</h1>
+    <input type="hidden" name="retorno" value="{{retorno}}">
+    <label class="user">
+        <strong>Usuário</strong>
+        <input type="text" class="text" name="user" value="{{user}}" maxlength="20">
+    </label>
+    <label class="pass">
+        <strong>Senha</strong>
+        <input type="password" class="text" name="pass" value="" maxlength="15">
+    </label>
+    <button class="btn login" type="submit">Entrar</button>
+</form>
+
+<script id="jslogin">
+    (function () {
+        if ('{{erros}}' != '')
+            $('#loginfrm h1').after('<div class="erro">{{erros}}</div>');
+
+        $('#jslogin').remove();
+    })();
+</script>
