@@ -5,7 +5,7 @@
  * NOTA: Se houver erro na conexão (Connection não setado), o script será interrompido e o erro mostrado em uma tag
  * META, que é invisível ao usuário, sendo visível apenas no código da página
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2015
  */
 

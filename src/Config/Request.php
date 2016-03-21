@@ -6,8 +6,8 @@
  *
  * Nota: Se a pasta {raiz}/public (e suas pastas internas) não existirem, a classe tenta criar.
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
- * @copyright Copyright (c) 2015, TMW E-commerce Solutions
+ * @author    Daniel Bispo <szagot@gmail.com>
+ * @copyright Copyright (c) 2015
  */
 
 namespace Config;
@@ -251,7 +251,7 @@ class Request
 
     /**
      * Adiciona o conteúdo de um arquivo no ponto de chamada, repetindo seu conteúdo pela quantidade de linhas no
-     * parâmetro. Atalho para echo $this->getFile() (A impressão em tela é imediata). Se for um arquivo html, css ou js
+     * parâmetro. Atalho para echo $this->getMultipleFile() (A impressão em tela é imediata). Se for um arquivo html, css ou js
      * irá fazer, por padrão, a miniaturalização do mesmos antes de adicionar. Se houverem parâmetros, tentará
      * substituir no código. Exemplo:
      *      O array múltiplo informado [ [ 'nome' => 'Teste' ] ] servirá para localizar e substituir o texto

@@ -2,7 +2,7 @@
 /**
  * Controle de Módulos homologados
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  */
 
 namespace App;
@@ -19,7 +19,7 @@ class Modulos
         # Área de Testes
         'teste'                => '\Testes\Area',
         # Cria as tabelas do sistema
-        'createtables'         => '\Control\CreateTables',
+        # 'createtables'         => '\Control\CreateTables',
 
         # Login do sistema
         'login'                => '\Control\Login',
@@ -29,8 +29,8 @@ class Modulos
     ];
 
     private static $modulosSemSeguranca = [
-        'teste',
         'createtables',
+        'teste',
         'login'
     ];
 

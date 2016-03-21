@@ -2,7 +2,7 @@
 /**
  * Configurações do Sistema e do Banco de Dados
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  */
 
 namespace App;

@@ -2,7 +2,7 @@
 /**
  * Métodos para tipos de mensagem
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
 * @copyright Copyright (c) 2015
  */
 

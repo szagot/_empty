@@ -7,7 +7,7 @@
  * Exemplo de GET: echo $sessao->attr;
  * Encerra seção: $sessao = NULL;
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2015
  */
 namespace Config;

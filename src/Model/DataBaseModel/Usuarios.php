@@ -2,18 +2,19 @@
 /**
  * Controle de I/O da tabela de Usuários
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2015
  */
 
-namespace Model\DataBaseControl;
+namespace Model\DataBaseModel;
 
 use Conn\Connection,
     Conn\Query,
     App\Config,
-    App\Auth;
+    App\Auth,
+    Model\DataBaseTables\Usuarios as TUsuarios;
 
-class Usuarios
+class Usuarios implements IModel
 {
     const
         ATIVO = 1,
@@ -26,8 +27,6 @@ class Usuarios
         $registrosAfetados = 0;
 
     /**
-     * Pega todos os usuários cadastrados ou o usuário de nick informado
-     *
      * @param string|null $nick Pega apenas o usuário com o nick selecionado
      *
      * @return array
@@ -36,18 +35,15 @@ class Usuarios
     {
         if ( ! self::$usuarios ) {
             self::setConn();
-            self::$usuarios = Query::exec( 'SELECT * FROM usuarios ORDER BY nome' );
+            self::$usuarios = Query::exec( 'SELECT * FROM Usuarios ORDER BY nome' );
         }
 
         // Nick informado?
         if ( ! is_null( $nick ) ) {
-            // Nick válido?
-            if ( self::validaNick( $nick ) ) {
-                foreach ( self::get() as $user )
-                    // Encontrou o nick pesquisado?
-                    if ( isset( $user[ 'nick' ] ) && $user[ 'nick' ] == $nick )
-                        return $user;
-            }
+            foreach ( self::get() as $user )
+                // Encontrou o nick pesquisado?
+                if ( isset( $user[ 'nick' ] ) && $user[ 'nick' ] == $nick )
+                    return $user;
 
             // Não encontrou o nick
             return [ ];
@@ -62,7 +58,8 @@ class Usuarios
      *
      * @return array
      */
-    public static function getActive()
+    public
+    static function getActive()
     {
         $tempUsers = [ ];
         foreach ( self::get() as $user )
@@ -77,7 +74,8 @@ class Usuarios
      *
      * @return array
      */
-    public static function getInactive()
+    public
+    static function getInactive()
     {
         $tempUsers = [ ];
         foreach ( self::get() as $user )
@@ -87,72 +85,65 @@ class Usuarios
         return $tempUsers;
     }
 
-    /**
-     *  Seta/Inclui um usuário ao sistema de gestão (Dashboard)
-     *
-     * @param string $nick  Nick do usuário (padrão letras, números, pontos, taços e/ou underline)
-     * @param string $nome  Nome do usuário
-     * @param string $senha Senha do usuário
-     * @param int    $ativo Está ativo?
-     *
-     * @return bool Em caso de falha, o retorno será FALSE e um log de erros poderá ser recuperado com getErros()
-     */
-    public static function insert( $nick, $nome, $senha, $ativo = self::ATIVO )
+    public static function insert( $records )
     {
         self::$registrosAfetados = 0;
 
-        // Verifica se o Nick e a senha estão dentro dos padrões
-        if ( ! self::validaNick( $nick ) || ! self::validaSenha( $senha ) || ! self::validaNome( $nome ) ) {
-            self::$erros[] = 'Nick, Nome ou Senha inválidos. O nick deve ter de 1 a 20 caracteres, entre letras, números, '
-                . 'traços, pontos e/ou underlines. O nome não pode estar vazio e a senha deve ter de 6 a 15 caracteres.';
+        // Possui registros?
+        if ( ! is_array( $records ) || count( $records ) == 0 ) {
+            self::$erros[] = 'Informe pelo menos 1 registro a ser adicionado';
 
             return false;
         }
 
-        // Verifica se o usuário já existe
-        $testUser = self::get( $nick );
-        if ( isset( $testUser[ 'nick' ] ) ) {
-            self::$erros[] = "Já existe um usuário com o nick {$nick}";
+        $query = '';
+        $data = [ ];
+        foreach ( $records as $index => $record ) {
+            // Valida o formato
+            if ( ! $record instanceof TUsuarios ) {
+                self::$erros[] = "Formato do registro na chave {$index} é inválido. Ele deve ser uma tabela de Usuários.";
 
-            return false;
+                continue;
+            }
+
+            // Verifica se o usuário já existe
+            $testUser = self::get( $record->getNick() );
+            if ( isset( $testUser[ 'nick' ] ) ) {
+                self::$erros[] = "Já existe um usuário com o nick {$record->getNick()}";
+
+                return false;
+            }
+
+            // Monta a query
+            $query .= ( ! empty( $query ) ? ', ' : '' ) . "(:nick{$index}, :nome{$index}, :senha{$index}, :ativo{$index})";
+            $data[ "nick{$index}" ] = $record->getNick();
+            $data[ "nome{$index}" ] = $record->getNome();
+            $data[ "senha{$index}" ] = $record->getSenha();
+            $data[ "ativo{$index}" ] = $record->getAtivo();
         }
 
-        // Garante que ativo estará no formato certo
-        $ativo = ( $ativo == self::ATIVO ) ? self::ATIVO : self::INATIVO;
+        if ( count( $data ) > 0 ) {
+            // Tenta cadastrar os usuário
+            if ( ! Query::exec( "INSERT INTO usuarios VALUES {$query}", $data ) ) {
+                self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
 
-        // Monta array de dados
-        $data = [
-            'nick'  => $nick,
-            'nome'  => $nome,
-            'senha' => Auth::hash( $senha ),
-            'ativo' => $ativo
-        ];
+                return false;
+            }
 
-        // Tenta cadastrar o usuário
-        if ( ! Query::exec( 'INSERT INTO usuarios VALUES(:nick, :nome, :senha, :ativo)', $data ) ) {
-            self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
+            // Salva a quantidade de usuários inseridos
+            self::$registrosAfetados = (int) Query::getLog( true )[ 'rowsAffected' ];
 
-            return false;
+            // Se foi cadastrado, pega usuários novamente
+            self::$usuarios = null;
+            self::get();
+
+            return true;
         }
 
-        // Salva a quantidade de usuários inseridos
-        self::$registrosAfetados = (int) Query::getLog( true )[ 'rowsAffected' ];
-
-        // Se foi cadastrado, adiciona o usuario ao array já baixado
-        self::$usuarios = null;
-        self::get();
-
-        return true;
+        // Não cadastrou nenhum usuário
+        return false;
     }
 
-    /**
-     * Efetua a alteração no valor dos campos do nick informado
-     *
-     * @param string $nick   Nick a ser alterado
-     * @param array  $campos Campos a serem alterados ([ 'campo' => 'novo valor' ])
-     *
-     * @return bool
-     */
     public static function update( $nick, $campos = [ ] )
     {
         self::$registrosAfetados = 0;
@@ -292,13 +283,6 @@ class Usuarios
         return true;
     }
 
-    /**
-     * Deleta um ou mais usuários informados pelo nick
-     *
-     * @param string|array $nicks Nick ou um array de Nicks a serem deletados
-     *
-     * @return bool
-     */
     public static function delete( $nicks )
     {
         self::$registrosAfetados = 0;
@@ -431,10 +415,7 @@ class Usuarios
     }
 
 
-    /**
-     * Seta a conexão com o banco de dados do Dashboard
-     */
-    private static function setConn()
+    public static function setConn()
     {
         // Efetua a conexão apenas uma vez no BD
         if ( ! self::$conn ) {
@@ -454,9 +435,6 @@ class Usuarios
         }
     }
 
-    /**
-     * Planos constructor.
-     */
     private function __construct()
     {
     }

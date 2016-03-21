@@ -1,6 +1,6 @@
 <?php
 /**
- * @author    Daniel Bispo <daniel@tmw.com.br>
+ * @author    Daniel Bispo <szagot@gmail.com>
  */
 
 require_once '_autoload.php';

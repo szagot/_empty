@@ -2,7 +2,7 @@
 /**
  * Controle de Login do Sistema
  *
- * @author Daniel Bispo <daniel@tmw.com.br>
+ * @author Daniel Bispo <szagot@gmail.com>
  */
 
 namespace Control;
@@ -11,7 +11,7 @@ use
     Config\Request,
     Config\Uri,
     Config\Sessao,
-    Model\DataBaseControl\Usuarios;
+    Model\DataBaseModel\Usuarios;
 
 class Login
 {
