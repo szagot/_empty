@@ -85,20 +85,48 @@ class Usuarios implements IModel
         return $this->erro;
     }
 
+    public function validaCamposObrigatorios( $update = false )
+    {
+        // É para atualização?
+        if ( $update )
+            // Pelo menos 1 campo foi informado?
+            return (
+                ! is_null( $this->getNick() ) ||
+                ! is_null( $this->getNome() ) ||
+                ! is_null( $this->getSenha() ) ||
+                ! is_null( $this->getAtivo() )
+            );
+
+        // Se for Insert, coloca o Ativo no padrão, caso não informado
+        if ( is_null( $this->getAtivo() ) )
+            $this->setAtivo();
+
+        // TODOS os campos obrigatórios foram informados?
+        return (
+            ! is_null( $this->getNick() ) &&
+            ! is_null( $this->getNome() ) &&
+            ! is_null( $this->getSenha() )
+        );
+    }
+
     /**
-     * Usuarios constructor.
+     * Usuarios constructor. Somente seta as variáveis que forem declaradas
      *
      * @param string $nick
      * @param string $nome
      * @param string $senha
      * @param int    $ativo
      */
-    public function __construct( $nick = null, $nome = null, $senha = null, $ativo = self::INATIVO )
+    public function __construct( $nick = null, $nome = null, $senha = null, $ativo = null )
     {
-        $this->setNick( $nick );
-        $this->setNome( $nome );
-        $this->setSenha( $senha );
-        $this->setAtivo( $ativo );
+        if ( ! is_null( $nick ) )
+            $this->setNick( $nick );
+        if ( ! is_null( $nome ) )
+            $this->setNome( $nome );
+        if ( ! is_null( $senha ) )
+            $this->setSenha( $senha );
+        if ( ! is_null( $ativo ) )
+            $this->setAtivo( $ativo );
     }
 
 
@@ -192,7 +220,7 @@ class Usuarios implements IModel
     /**
      * @param int $ativo
      */
-    public function setAtivo( $ativo = self::ATIVO )
+    public function setAtivo( $ativo = self::INATIVO )
     {
         $this->fields[ 'ativo' ][ 'value' ] = ( $ativo == self::ATIVO ) ? self::ATIVO : self::INATIVO;
     }

@@ -51,6 +51,14 @@ interface IModel
      */
     public function getRegistrationModel();
 
+    /**
+     * Valida os campos obrigatórios da tabela, pra ver se estão declarados
+     *
+     * @param bool $update Para atualização, basta que pelo menos 1 campo tenha sido declarado
+     *
+     * @return bool
+     */
+    public function validaCamposObrigatorios($update = false);
 
     /**
      * Retorna o último erro gerado

@@ -22,7 +22,13 @@
 
 // Pega a requisição se houver
 $req = '';
-$reqValues = [ ];
+$reqValues = [
+    0 => null,
+    1 => null,
+    2 => null,
+    3 => null,
+    4 => null
+];
 $get = filter_input( INPUT_GET, 'req' );
 if ( $get != '' ) {
     $req = utf8_encode( base64_decode( $get ) );

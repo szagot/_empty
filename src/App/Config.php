@@ -30,6 +30,12 @@ class Config
             'pass' => ''
         ],
 
+        // Dados para API de Testes
+        'api'    => [
+            'user' => 'szagot@gmail.com',
+            'pass' => 'D5p1d3r'
+        ]
+
     ];
 
     /**
@@ -46,5 +52,21 @@ class Config
 
         // Retorna as configurações do módulo
         return (object) self::$dbData[ 'system' ];
+    }
+
+    /**
+     * Retorna os dados para acesso Auth Basic
+     * @return object
+     */
+    public static function getAPIData()
+    {
+        // É local?
+        if ( ( new Uri() )->eLocal() )
+            // Retorna as configurações locais do sistema
+            return (object) self::$dbData[ 'api' ];
+
+        // Retorna as configurações do módulo do sistema.
+        // ATENÇÃO! Troque essa parte pelos dados do seu BD para maior segurança.
+        return (object) self::$dbData[ 'api' ];
     }
 }

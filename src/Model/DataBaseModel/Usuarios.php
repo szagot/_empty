@@ -85,7 +85,7 @@ class Usuarios implements IModel
         return $tempUsers;
     }
 
-    public static function insert( $records )
+    public static function insert( $records = [ ] )
     {
         self::$registrosAfetados = 0;
 
@@ -111,7 +111,13 @@ class Usuarios implements IModel
             if ( isset( $testUser[ 'nick' ] ) ) {
                 self::$erros[] = "Já existe um usuário com o nick {$record->getNick()}";
 
-                return false;
+                continue;
+            }
+
+            if ( ! $record->validaCamposObrigatorios() ) {
+                self::$erros[] = 'Nick, Nome e Senha são obrigatórios';
+
+                continue;
             }
 
             // Monta a query
@@ -144,145 +150,91 @@ class Usuarios implements IModel
         return false;
     }
 
-
-    // Tarefa: Fazer a partir daqui
-    public static function update( $nick, $campos = [ ] )
+    public static function update( $records = [ ] )
     {
         self::$registrosAfetados = 0;
 
-        // Pelo menos um campo foi informado?
-        if ( ! is_array( $campos ) && count( $campos ) == 0 ) {
-            self::$erros[] = 'Informe pelo menos 1 campo para alteração';
+        // Possui registros?
+        if ( ! is_array( $records ) || count( $records ) == 0 ) {
+            self::$erros[] = 'Informe pelo menos 1 registro a ser alterado';
 
             return false;
         }
 
-        // Nick é válido?
-        if ( ! self::validaNick( $nick ) ) {
-            self::$erros[] = "Nick {$nick} inválido. O nick deve ter de 1 a 20 caracteres, entre letras, números, "
-                . 'traços, pontos e/ou underlines.';
+        $query = '';
+        foreach ( $records as $nick => $record ) {
+            // Valida o formato
+            if ( ! $record instanceof TUsuarios ) {
+                self::$erros[] = "Formato do registro {$nick} é inválido. Ele deve ser uma tabela de Usuários.";
 
-            return false;
+                continue;
+            }
+
+            // Verifica se o usuário buscado existe
+            $updateUser = self::get( $nick );
+            if ( ! isset( $updateUser[ 'nick' ] ) ) {
+                self::$erros[] = "O nick {$nick} informado não existe.";
+
+                continue;
+            }
+
+            // Verifica se o novo nick já não existe, no caso de ser solicitada alteração de nick
+            if ( $nick != $record->getNick() ) {
+                // Verifica se o usuário já existe
+                $testUser = self::get( $record->getNick() );
+                if ( isset( $testUser[ 'nick' ] ) ) {
+                    self::$erros[] = "Já existe um usuário com o nick {$record->getNick()}";
+
+                    continue;
+                }
+            }
+
+            // Pelo menos 1 campo tem q estar preenchido para alteração
+            if ( ! $record->validaCamposObrigatorios( true ) ) {
+                self::$erros[] = "Informe pelo menos 1 campos para alteração no registro {$nick}";
+
+                continue;
+            }
+
+            // Monta a query
+            $data = [ 'search' => $nick ];
+            $query = '';
+            if ( ! is_null( $record->getNick() ) ) {
+                $data[ 'nick' ] = $record->getNick();
+                $query .= ( ! empty( $query ) ? ', ' : '' ) . 'nick = :nick';
+            }
+            if ( ! is_null( $record->getNome() ) ) {
+                $data[ 'nome' ] = $record->getNome();
+                $query .= ( ! empty( $query ) ? ', ' : '' ) . 'nome = :nome';
+            }
+            if ( ! is_null( $record->getSenha() ) ) {
+                $data[ 'senha' ] = $record->getSenha();
+                $query .= ( ! empty( $query ) ? ', ' : '' ) . 'senha = :senha';
+            }
+            if ( ! is_null( $record->getAtivo() ) ) {
+                $data[ 'ativo' ] = $record->getAtivo();
+                $query .= ( ! empty( $query ) ? ', ' : '' ) . 'ativo = :ativo';
+            }
+
+            // Tenta fazer a atualização do mesmo
+            if ( ! Query::exec( "UPDATE usuarios SET {$query} WHERE nick = :search", $data ) ) {
+                self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
+
+                continue;
+            }
+
+            self::$registrosAfetados += (int) Query::getLog( true )[ 'rowsAffected' ];
         }
 
-        // Verifica se o usuário existe
-        $updateUser = self::get( $nick );
-        if ( ! isset( $updateUser[ 'nick' ] ) ) {
-            self::$erros[] = "O nick {$nick} informado não existe.";
+        // Se houve alteração, pega usuários novamente
+        if ( self::$registrosAfetados > 0 ) {
+            self::$usuarios = null;
+            self::get();
 
             return true;
         }
 
-        // Inicia a análise de cada campo informado
-        $altera = '';
-        foreach ( $campos as $campo => $valor ) {
-            $deveAlterar = true;
-            switch ( $campo ) {
-                case 'nick':
-                    // Verifica se é válido
-                    if ( ! self::validaNick( $valor ) ) {
-                        self::$erros[] = "O nick {$valor} informado não está dentro dos parâmetros: "
-                            . 'O nick deve ter de 1 a 20 caracteres, entre letras, números, traços, pontos e/ou underlines';
-
-                        return false;
-                    }
-
-                    // Verifica se o nick informado não é o mesmo cadastrado
-                    if ( $nick == $valor ) {
-                        $deveAlterar = false;
-                        continue;
-                    }
-
-                    // Verifica se o nick informado já existe
-                    $verificaNick = self::get( $valor );
-                    if ( isset( $verificaNick[ 'nick' ] ) ) {
-                        self::$erros[] = "Já existe um usuário com o nick {$valor} cadastrado.";
-
-                        return false;
-                    }
-
-                    break;
-
-                case 'nome':
-                    // Nome é válido?
-                    if ( ! self::validaNome( $valor ) ) {
-                        self::$erros[] = "O nome {$valor} informado não está dentro dos parâmetros: "
-                            . 'não deve estar vazio e ter até 50 caracteres.';
-
-                        return false;
-                    }
-
-                    break;
-
-                case 'senha':
-                    // Se o valor informado é null, ele não altera
-                    if ( empty( $valor ) ) {
-                        $deveAlterar = false;
-                        continue;
-                    }
-
-                    // Senha é válida?
-                    if ( ! self::validaSenha( $valor ) ) {
-                        self::$erros[] = 'A senha informada não está dentro dos parâmetros: '
-                            . 'ela deve ter de 6 a 15 caracteres.';
-
-                        return false;
-                    }
-
-                    // Coloca a senha com hash
-                    $campos[ $campo ] = Auth::hash( $valor );
-
-                    break;
-
-                case 'ativo':
-                    $campos[ $campo ] = ( $valor == self::ATIVO ) ? self::ATIVO : self::INATIVO;
-                    break;
-
-                // Campo não é válido
-                default:
-                    self::$erros[] = "Campo {$campo} é inválido. Campos válidos são: "
-                        . 'nome, senha e ativo.';
-
-                    return false;
-
-            }
-
-            // Acrescenta o campo na lista de alteração se o valor for diferente do atual
-            if ( $deveAlterar && $updateUser[ $campo ] != $valor )
-                $altera .= ( $altera == '' ) ? "{$campo} = :{$campo}" : ", {$campo} = :{$campo}";
-
-            // Caso o valor seja o mesmo, exclui o campo da alteração
-            else
-                unset( $campos[ $campo ] );
-        }
-
-        // Será necessária alguma alteração?
-        if ( $altera == '' )
-            return true;
-
-        // Adiciona o nick pesquisado
-        $campos[ 'nick' ] = $nick;
-
-        // Tenta efetuar a alteração no nick informado
-        if ( ! Query::exec( "UPDATE usuarios SET {$altera} WHERE nick = :nick", $campos ) ) {
-            self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
-
-            return false;
-        }
-
-        // Salva a quantidade de usuários alterados
-        self::$registrosAfetados = (int) Query::getLog( true )[ 'rowsAffected' ];
-
-        // Se foi alterado, altera o usuario ao array já baixado
-        foreach ( self::$usuarios as $index => $usuario )
-            if ( $usuario[ 'nick' ] == $nick ) {
-                foreach ( $campos as $campo => $valor )
-                    self::$usuarios[ $index ][ $campo ] = $valor;
-
-                break;
-            }
-
-        return true;
+        return false;
     }
 
     public static function delete( $nicks )

@@ -1,7 +1,7 @@
 <?php
 /**
  * Cria as tabelas do sistema, conforme seus dados em Model\DataBaseTables\Tabela
- *      /createtables {Auth Basic}
+ *      POST /createtables {Auth Basic}
  *
  * @author    Daniel Bispo <szagot@gmail.com>
  */
@@ -32,7 +32,7 @@ class CreateTables
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic( 'szagot@gmail.com', 'DSpider' ) )
+        if ( ! Auth::basic( Config::getAPIData()->user, Config::getAPIData()->pass ) || $uri->getMethod() != 'POST' )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         // É pra apagar as tabelas antes de criá-las?
@@ -76,7 +76,6 @@ class CreateTables
             // Deu erro?
             if ( $msg !== true )
                 Msg::api( [
-                    'status' => false,
                     'msg'    => $msg,
                     'data'   => Query::getLog()
                 ], Msg::HEADER_DADOS_INVALIDOS );
@@ -88,7 +87,6 @@ class CreateTables
 
                 if ( ! $pathModel::insert( $initialRecords ) )
                     Msg::api( [
-                        'status' => false,
                         'msg'    => $pathModel::getErros(),
                         'data'   => Query::getLog()
                     ], Msg::HEADER_DADOS_INVALIDOS );
@@ -97,7 +95,6 @@ class CreateTables
 
         // Tabelas criadas
         Msg::api( [
-            'status' => true,
             'msg'    => 'Tabelas Criadas',
             'data'   => Query::getLog()
         ] );
