@@ -65,7 +65,7 @@ class Msg
     {
         $status = true;
         if ( ! headers_sent() ) {
-            header( 'WWW-Authenticate: Basic realm="TMWxA"' );
+            header( 'WWW-Authenticate: Basic realm="API"' );
             header( 'Content-Type: application/json' );
 
             switch ( $header ):

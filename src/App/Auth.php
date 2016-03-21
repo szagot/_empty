@@ -1,6 +1,7 @@
 <?php
 /**
- * Controle de autorização do sistema
+ * Controle de autorização do sistema.
+ * Inclui verificação de Auth Basic para API's
  *
  * @author    Daniel Bispo <szagot@gmail.com>
  */
@@ -79,5 +80,37 @@ class Auth
         return strtr( $senha, self::$chave[ 'b' ], self::$chave[ 'a' ] );
     }
 
+    /**
+     * Verifica se o acesso via Auth Basic é permitido
+     *
+     * @param string $user Usuário Válido
+     * @param string $pass Senha Válida
+     *
+     * @return bool
+     */
+    public static function basic( $user, $pass )
+    {
+        // Verificando dados de autenticação
+        $username =
+        $password = null;
+
+        // mod_php
+        if ( isset( $_SERVER[ 'PHP_AUTH_USER' ] ) ):
+            $username = $_SERVER[ 'PHP_AUTH_USER' ];
+            $password = $_SERVER[ 'PHP_AUTH_PW' ];
+
+        // demais servers
+        elseif ( isset( $_SERVER[ 'HTTP_AUTHORIZATION' ] ) ):
+
+            if ( preg_match( '/^basic/i', $_SERVER[ 'HTTP_AUTHORIZATION' ] ) )
+                list( $username, $password ) = explode( ':', base64_decode( substr( $_SERVER[ 'HTTP_AUTHORIZATION' ], 6 ) ) );
+
+        endif;
+
+        // Grava usuário e senha no formato RESTful BASIC
+        $autenticidadeCodificada = md5( strtolower( $user ) . ':' . $pass );
+
+        return ( $username == $user && $password == $pass );
+    }
 
 }

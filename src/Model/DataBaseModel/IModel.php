@@ -48,6 +48,15 @@ interface IModel
     public static function delete( $ids );
 
     /**
+     * Pega os erros gerados ou um array vazio em caso de não haver erros
+     *
+     * @param bool $apenasUltimo Se TRUE retorna apenas o último registro
+     *
+     * @return array
+     */
+    public static function getErros( $apenasUltimo = true );
+
+    /**
      * Seta a conexão com o banco de dados do Dashboard, para ser usada no self::get()
      */
     public static function setConn();

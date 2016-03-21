@@ -33,7 +33,7 @@ class Usuarios implements IModel
      */
     public static function get( $nick = null )
     {
-        if ( ! self::$usuarios ) {
+        if ( is_null( self::$usuarios ) ) {
             self::setConn();
             self::$usuarios = Query::exec( 'SELECT * FROM Usuarios ORDER BY nome' );
         }
@@ -115,11 +115,11 @@ class Usuarios implements IModel
             }
 
             // Monta a query
-            $query .= ( ! empty( $query ) ? ', ' : '' ) . "(:nick{$index}, :nome{$index}, :senha{$index}, :ativo{$index})";
-            $data[ "nick{$index}" ] = $record->getNick();
-            $data[ "nome{$index}" ] = $record->getNome();
-            $data[ "senha{$index}" ] = $record->getSenha();
-            $data[ "ativo{$index}" ] = $record->getAtivo();
+            $query .= ( ! empty( $query ) ? ', ' : '' ) . "(:nick_{$index}, :nome_{$index}, :senha_{$index}, :ativo_{$index})";
+            $data[ "nick_{$index}" ] = $record->getNick();
+            $data[ "nome_{$index}" ] = $record->getNome();
+            $data[ "senha_{$index}" ] = $record->getSenha();
+            $data[ "ativo_{$index}" ] = $record->getAtivo();
         }
 
         if ( count( $data ) > 0 ) {
@@ -144,6 +144,8 @@ class Usuarios implements IModel
         return false;
     }
 
+
+    // Tarefa: Fazer a partir daqui
     public static function update( $nick, $campos = [ ] )
     {
         self::$registrosAfetados = 0;
@@ -392,13 +394,6 @@ class Usuarios implements IModel
     }
 
 
-    /**
-     * Pega os erros gerados ou um array vazio em caso de não haver erros
-     *
-     * @param bool $apenasUltimo Se TRUE retorna apenas o último registro
-     *
-     * @return array
-     */
     public static function getErros( $apenasUltimo = true )
     {
         return $apenasUltimo ? end( self::$erros ) : self::$erros;
@@ -435,7 +430,4 @@ class Usuarios implements IModel
         }
     }
 
-    private function __construct()
-    {
-    }
 }

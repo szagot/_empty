@@ -18,8 +18,8 @@ class Modulos
     private static $modulos = [
         # Área de Testes
         'teste'                => '\Testes\Area',
-        # Cria as tabelas do sistema
-        # 'createtables'         => '\Control\CreateTables',
+        # Cria as tabelas do sistema (Necessita de autorização via Auth Basic)
+        'createtables'         => '\Control\CreateTables',
 
         # Login do sistema
         'login'                => '\Control\Login',

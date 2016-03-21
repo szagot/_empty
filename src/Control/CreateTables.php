@@ -1,7 +1,7 @@
 <?php
 /**
- * Cria as tabelas do sistema
- *      /createtables?access=chave-de-acesso
+ * Cria as tabelas do sistema, conforme seus dados em Model\DataBaseTables\Tabela
+ *      /createtables {Auth Basic}
  *
  * @author    Daniel Bispo <szagot@gmail.com>
  */
@@ -10,27 +10,29 @@ namespace Control;
 
 use Config\Uri,
     App\Msg,
+    App\Auth,
     Conn\Connection,
     Conn\CreateTable,
     App\Config;
+use Conn\Query;
 
 class CreateTables
 {
+    /** @var array Tabelas registradas para criação */
     private static $registeredTables = [
         'Usuarios',
     ];
 
     /**
      * Gera a tabelas do BD do sistema.
-     * Autorizado apenas se informado o parametro access como Sz4g-0tNVM
+     * Autorizado apenas para email e senha padrões
      *
      * @param Uri $uri
      */
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        $authAccess = $uri->getParam( 'access' );
-        if ( $authAccess != 'Sz4g-0t' )
+        if ( ! Auth::basic( 'szagot@gmail.com', 'DSpider' ) )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         // É pra apagar as tabelas antes de criá-las?
@@ -73,7 +75,11 @@ class CreateTables
 
             // Deu erro?
             if ( $msg !== true )
-                Msg::api( $msg, Msg::HEADER_DADOS_INVALIDOS );
+                Msg::api( [
+                    'status' => false,
+                    'msg'    => $msg,
+                    'data'   => Query::getLog()
+                ], Msg::HEADER_DADOS_INVALIDOS );
 
             // Tem registros iniciais?
             $initialRecords = $newTable->getRegistrationModel();
@@ -81,12 +87,20 @@ class CreateTables
                 $pathModel = 'Model\DataBaseModel\\' . $table;
 
                 if ( ! $pathModel::insert( $initialRecords ) )
-                    Msg::api( $pathModel::getErros() );
+                    Msg::api( [
+                        'status' => false,
+                        'msg'    => $pathModel::getErros(),
+                        'data'   => Query::getLog()
+                    ], Msg::HEADER_DADOS_INVALIDOS );
             }
         }
 
         // Tabelas criadas
-        Msg::api( 'Tabelas criadas' );
+        Msg::api( [
+            'status' => true,
+            'msg'    => 'Tabelas Criadas',
+            'data'   => Query::getLog()
+        ] );
 
     }
 }
