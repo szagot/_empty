@@ -16,7 +16,7 @@ class Config
 
         // Dados para quando o acesso for local
         'local'  => [
-            'bd'   => '',
+            'bd'   => '_empty',
             'host' => 'localhost',
             'user' => 'root',
             'pass' => ''

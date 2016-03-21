@@ -76,8 +76,7 @@ class Usuarios implements IModel
     public function getRegistrationModel()
     {
         return [
-            new self( 'szagot', 'Daniel Bispo', 'DSpider', self::ATIVO ),
-            new self( 'fulano', 'Fulano Bispo', 'DSpider', self::INATIVO )
+            new self( 'szagot', 'Daniel Bispo', 'DSpider', self::ATIVO )
         ];
     }
 

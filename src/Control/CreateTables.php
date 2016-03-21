@@ -53,7 +53,7 @@ class CreateTables
             // Criando a tabela
             $newTable = new $pathTable;
             foreach ( $newTable->getFields() as $fieldName => $fieldProp ) {
-                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'legth' ] );
+                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'length' ] );
                 // É chave primária?
                 if ( $fieldProp[ 'primaryKey' ] )
                     $tabela->setPrimaryKey( $fieldName, $fieldProp[ 'increment' ] );
@@ -69,7 +69,7 @@ class CreateTables
             }
 
             // Cria a tabela
-            $msg = $tabela->create();
+            $msg = $tabela->create( CreateTable::COLLATE_UTF8, CreateTable::ENGINE_MYISSAM );
 
             // Deu erro?
             if ( $msg !== true )
@@ -80,7 +80,7 @@ class CreateTables
             if ( count( $initialRecords ) > 0 ) {
                 $pathModel = 'Model\DataBaseModel\\' . $table;
 
-                if( ! $pathModel::insert( $initialRecords ) )
+                if ( ! $pathModel::insert( $initialRecords ) )
                     Msg::api( $pathModel::getErros() );
             }
         }
