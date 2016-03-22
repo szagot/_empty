@@ -33,9 +33,13 @@ São elas:
 
 Classes de Configuração. Vide _Config/README.md_
 
+- GitHub Repository: https://github.com/szagot/config
+
 >       src/Conn
 
 Classes de Conexão com o BD. Vide _Conn/README.md_
+
+- GitHub Repository: https://github.com/szagot/conn
 
 Além das classes de base, possui uma especifica para o projeto:
 
