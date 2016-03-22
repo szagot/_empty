@@ -15,8 +15,10 @@ error_reporting( $debug ? E_ALL : 0 );
 // Seta a Zona local
 date_default_timezone_set( 'America/Sao_Paulo' );
 
-// Constante LOCAL (Raiz do localhost)
+// Constante RAIZ contém a raiz do sistema geral
 define( 'RAIZ', '' );
+// Constante RAIZ_LOCAL contém a raiz do local.
+// As requisições de URI serão sempre "RAIZ_LOCAL . RAIZ" quando executadas em "localhost"
 define( 'RAIZ_LOCAL', '_empty' );
 
 // Tempo de duração da seção em minutos

@@ -6,6 +6,8 @@ Também, já está desenvolvido o controle de IO de uma tabela simples de usuár
 
 Para gerar as tabelas de base, use a URI `/createtables`, passando via Auth Basic os dados de acesso, conforme configurados em _App/Config_. Isso irá criar TODAS as tabelas do sistema que estiverem homologadas em _Conn/CreateTable_, conforme suas configurações em _Model/DataBaseTables_.
 
+**Obs**: Não esqueça de mudar a raiz do projeto no local em **_autoload.php**
+
 
 ## Pastas do projeto
 
