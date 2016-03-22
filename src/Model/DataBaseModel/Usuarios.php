@@ -242,7 +242,7 @@ class Usuarios implements IModel
         self::$registrosAfetados = 0;
 
         // Se for um único nick a ser deletado, altera para um array
-        if ( is_string( $nicks ) )
+        if ( ! is_array( $nicks ) )
             $nicks = [ $nicks ];
 
         // Possui nicks para deletar?
