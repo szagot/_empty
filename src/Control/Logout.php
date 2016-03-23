@@ -22,6 +22,6 @@ class Logout
     public static function iniciar( Uri $uri )
     {
         Sessao::iniciar()->destruir();
-        Login::iniciar( $uri );
+        Login::retornaRaiz( $uri );
     }
 }

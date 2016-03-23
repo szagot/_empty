@@ -87,7 +87,7 @@ class Login
      *
      * @param Uri $uri
      */
-    private static function retornaRaiz( Uri $uri )
+    public static function retornaRaiz( Uri $uri )
     {
         header( 'Location: ' . $uri->getRaiz()
             . ( ( ! is_null( $uri->getParam( 'retorno' ) ) && ! preg_match( '/^(sair|logout)$/i', $uri->getParam( 'retorno' ) ) )
