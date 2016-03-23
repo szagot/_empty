@@ -1,3 +1,7 @@
     <h1>Empty Project - Admin</h1>
     <h2>Mais um projeto Ibbot!</h2>
-    <a href="{{raiz}}sair">Logout</a>
+    <!-- O parametro "retorno" garante que após o logout,
+    a pessoa será redirecionada para a tela de login a fim de acessar novamente o sistema.
+    Omitir isso fará a pessoa ir para a raiz do projeto, que, no momento, está configurada como não protegida.
+    Para mudar isso, vá em "src/Config/Modulos" e remova a raiz das páginas não protegidas. -->
+    <a href="{{raiz}}sair?retorno=admin">Logout</a>
