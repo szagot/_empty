@@ -1,29 +1,20 @@
 @import url(https://fonts.googleapis.com/css?family=Work+Sans:200,400);
 
-a {
-    color: #ffc3bc;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #9b0909;
-}
-
-#admin {
+#pagina-home {
     text-align: center;
 }
 
-#admin .container {
+#pagina-home .container {
     margin: 15% 10%;
 }
 
-#admin h1, #admin h2 {
+#pagina-home h1, #pagina-home h2 {
     font: 24pt 'Work Sans', sans-serif;
     color: #999;
     letter-spacing: .2em;
 }
 
-#admin h2 {
+#pagina-home h2 {
     font-size: 16pt;
     font-weight: 200;
     letter-spacing: .4em;

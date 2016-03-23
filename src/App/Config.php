@@ -32,8 +32,8 @@ class Config
 
         // Dados para API de Testes
         'api'    => [
-            'user' => 'szagot@gmail.com',
-            'pass' => 'D5p1d3r'
+            'user' => 'admin',
+            'pass' => 'admin'
         ]
 
     ];

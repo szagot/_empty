@@ -19,7 +19,7 @@ if ( $uri->removeWWW() )
     exit;
 
 // Inicializa sessao
-Sessao::iniciar( 'nvm', TEMPO_SESSAO );
+Sessao::iniciar( 'empty', TEMPO_SESSAO );
 
 // Inicializa pasta pública
 Request::iniciar( $uri->getRaiz() );

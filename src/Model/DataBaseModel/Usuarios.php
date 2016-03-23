@@ -255,14 +255,6 @@ class Usuarios implements IModel
         // Monta filtro
         $where = '';
         foreach ( $nicks as $index => $nick ) {
-            // Verifica se o Nick está dentro do padrão
-            if ( ! self::validaNick( $nick ) ) {
-                self::$erros[] = "Nick {$nick} inválido. O nick deve ter de 1 a 20 caracteres, entre letras, números, "
-                    . 'traços, pontos e/ou underlines.';
-
-                return false;
-            }
-
             // Verifica se o usuário existe
             $deleteUser = self::get( $nick );
             if ( ! isset( $deleteUser[ 'nick' ] ) ) {
@@ -285,14 +277,15 @@ class Usuarios implements IModel
         // Salva a quantidade de usuários deletados
         self::$registrosAfetados = (int) Query::getLog( true )[ 'rowsAffected' ];
 
-        // Apaga o(s) usuário(s) do registro local
-        foreach ( self::$usuarios as $index => $usuario )
-            if ( in_array( $usuario[ 'nick' ], $nicks ) )
-                unset( self::$usuarios[ $index ] );
-        // Reorganiza a lista
-        self::$usuarios = array_values( self::$usuarios );
+        // Se houve alteração, pega usuários novamente
+        if ( self::$registrosAfetados > 0 ) {
+            self::$usuarios = null;
+            self::get();
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -303,48 +296,13 @@ class Usuarios implements IModel
      *
      * @return boolean
      */
-    public static function validaSenha( $senha, $nick = null )
+    public static function validaSenha( $senha, $nick )
     {
-        // Se nick não informado, valida apenas o formato da senha
-        if ( ! isset( $nick ) )
-            return ( strlen( $senha ) >= 5 && strlen( $senha ) <= 15 );
-
-        // Nick é válido?
-        if ( ! self::validaNick( $nick ) )
-            return false;
-
         // Verifica se o usuário e a senha batem
         $user = self::get( $nick );
 
         return isset( $user[ 'senha' ] ) && $user[ 'senha' ] == Auth::hash( $senha ) && $user[ 'ativo' ] == self::ATIVO;
-
     }
-
-    /**
-     * Valida o nick do usuário. Somente letras, numeros, traço, underline e ponto,
-     * devendo começar com uma letra e ter no máximo 20 caracteres
-     *
-     * @param string $nick Nick a ser validado
-     *
-     * @return boolean
-     */
-    public static function validaNick( $nick )
-    {
-        return preg_match( '/^[a-z][a-z0-9\._-]{0,20}$/i', $nick );
-    }
-
-    /**
-     * Valida o nome do usuário. Deve ter de 2 a 50 caracteres
-     *
-     * @param string $nome Nome a ser validado
-     *
-     * @return boolean
-     */
-    public static function validaNome( $nome )
-    {
-        return ( strlen( $nome ) > 1 && strlen( $nome ) <= 50 );
-    }
-
 
     public static function getErros( $apenasUltimo = true )
     {
