@@ -55,7 +55,7 @@ class CreateTables
             // Criando a tabela
             $newTable = new $pathTable;
             foreach ( $newTable->getFields() as $fieldName => $fieldProp ) {
-                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'length' ] );
+                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'length' ], $fieldProp['defaultValue'] );
                 // É chave primária?
                 if ( $fieldProp[ 'primaryKey' ] )
                     $tabela->setPrimaryKey( $fieldName, $fieldProp[ 'increment' ] );
