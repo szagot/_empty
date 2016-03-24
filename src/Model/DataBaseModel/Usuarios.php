@@ -106,6 +106,13 @@ class Usuarios implements IModel
                 continue;
             }
 
+            // Verifica se há algum erro na informação de dados
+            if( $record->getErro() != '' ) {
+                self::$erros[] = $record->getErro();
+
+                continue;
+            }
+
             // Verifica se o usuário já existe
             $testUser = self::get( $record->getNick() );
             if ( isset( $testUser[ 'nick' ] ) ) {
@@ -170,6 +177,13 @@ class Usuarios implements IModel
                 continue;
             }
 
+            // Verifica se há algum erro na informação de dados
+            if( $record->getErro() != '' ) {
+                self::$erros[] = $record->getErro();
+
+                continue;
+            }
+
             // Verifica se o usuário buscado existe
             $updateUser = self::get( $nick );
             if ( ! isset( $updateUser[ 'nick' ] ) ) {
@@ -230,11 +244,8 @@ class Usuarios implements IModel
         if ( self::$registrosAfetados > 0 ) {
             self::$usuarios = null;
             self::get();
-
-            return true;
         }
 
-        self::$erros[] = "Nenhum registro alterado";
         return true;
     }
 
@@ -282,11 +293,8 @@ class Usuarios implements IModel
         if ( self::$registrosAfetados > 0 ) {
             self::$usuarios = null;
             self::get();
-
-            return true;
         }
 
-        self::$erros[] = "Nenhum registro deletado";
         return true;
     }
 
