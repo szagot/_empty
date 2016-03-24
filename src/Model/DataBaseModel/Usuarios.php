@@ -235,7 +235,7 @@ class Usuarios implements IModel
         }
 
         self::$erros[] = "Nenhum registro alterado";
-        return false;
+        return true;
     }
 
     public static function delete( $nicks )
@@ -287,7 +287,7 @@ class Usuarios implements IModel
         }
 
         self::$erros[] = "Nenhum registro deletado";
-        return false;
+        return true;
     }
 
     /**
