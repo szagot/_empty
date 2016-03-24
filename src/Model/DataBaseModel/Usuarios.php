@@ -146,7 +146,7 @@ class Usuarios implements IModel
             return true;
         }
 
-        // Não cadastrou nenhum usuário
+        self::$erros[] = "Nenhum registro cadastrado";
         return false;
     }
 
@@ -234,6 +234,7 @@ class Usuarios implements IModel
             return true;
         }
 
+        self::$erros[] = "Nenhum registro alterado";
         return false;
     }
 
@@ -285,6 +286,7 @@ class Usuarios implements IModel
             return true;
         }
 
+        self::$erros[] = "Nenhum registro deletado";
         return false;
     }
 
