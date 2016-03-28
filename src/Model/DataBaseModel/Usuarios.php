@@ -272,12 +272,15 @@ class Usuarios implements IModel
             if ( ! isset( $deleteUser[ 'nick' ] ) ) {
                 self::$erros[] = "O nick {$nick} informado não existe.";
 
-                // Embora emita um aviso, porém não se trata de um erro, já que o objetivo é deletar o registro.
-                return true;
+                continue;
             }
 
             $where .= ( $where == '' ) ? "nick = :{$index}" : " OR nick = :{$index}";
         }
+
+        // Se não houve alterações por erro de registros
+        if ( $where == '' )
+            return false;
 
         // Tenta deletar o(s) usuário(s)
         if ( ! Query::exec( "DELETE FROM usuarios WHERE {$where}", $nicks ) ) {
