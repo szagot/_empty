@@ -22,6 +22,13 @@ interface IModel
     public static function get( $limit = null, $offset = null );
 
     /**
+     * Retorna o total de registros de uma tabela
+     *
+     * @return int
+     */
+    public static function getQtdeReg();
+
+    /**
      * Seta o limite da pesquisa
      *
      * @param int $limit

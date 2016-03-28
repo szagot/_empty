@@ -46,6 +46,11 @@ class Usuarios implements IModel
         return self::$records;
     }
 
+    public static function getQtdeReg()
+    {
+        return (int) Query::exec( "SELECT COUNT(nick) FROM Usuarios" )[ 0 ];
+    }
+
     /**
      * Pega apenas o Id especificado
      *

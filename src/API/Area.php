@@ -6,6 +6,7 @@
  *  Read
  *      GET /api/{tabela}[?limit=9999&offset=0]
  *      GET /api/{tabela}/{primaryKey}
+ *      GET /api/{tabela}/?total=true -> Pega apenas o total
  *
  *  Create
  *      POST /api/{tabela}
@@ -31,7 +32,6 @@ use
     Config\Uri,
     App\Msg,
     Conn\Query,
-    App\Config,
     App\Auth;
 
 
@@ -144,6 +144,13 @@ class Area
 
             // Teste de listagem
             default:
+                // Pegar só total?
+                if ( $uri->getParam( 'total' ) )
+                    Msg::api( [
+                        'total'   => $modulo::getQtdeReg(),
+                        'detalhe' => Query::getLog( false )
+                    ] );
+
                 // Tem paginação?
                 if ( $uri->getParam( 'limit' ) )
                     $modulo::setLimit( $uri->getParam( 'limit' ) );
