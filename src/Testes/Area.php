@@ -53,7 +53,7 @@ class Area
         if ( ! Auth::basic( Config::getAPIData()->user, Config::getAPIData()->pass ) )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
-        if ( ! in_array( strtolower( $uri->getUri()->opcao ), self::$modulosHomologados ) )
+        if ( ! in_array( strtolower( $uri->opcao ), self::$modulosHomologados ) )
             Msg::api( ':P', Msg::HEADER_DADOS_INVALIDOS );
 
         self::testAPI( $uri );
@@ -66,7 +66,7 @@ class Area
      */
     private static function testAPI( Uri $uri )
     {
-        $set = strtolower( $uri->getUri()->opcao );
+        $set = strtolower( $uri->opcao );
         $modulo = 'Model\DataBaseModel\\' . ucwords( $set );
         $moduloT = 'Model\DataBaseTables\\' . ucwords( $set );
 
@@ -130,14 +130,14 @@ class Area
                 $json = $uri->getBody();
 
                 // Verifica se foi especificado um campo chave na URI
-                $primaryKey = isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe );
+                $primaryKey = isset( $uri->detalhe ) && ! empty( $uri->detalhe );
 
                 // Tem nick ou body?
                 if ( ! $primaryKey && count( $json ) == 0 )
                     Msg::api( 'Informe o id a ser deletado na URI ou pelo menos 1 ID no body', Msg::HEADER_DADOS_INVALIDOS );
 
                 // Deleta, priorizando URI. Se URI ão contiver um nick especificado, usa o body, com vários nicks
-                $result = $modulo::delete( $primaryKey ? $uri->getCaminho()->detalhe : $json );
+                $result = $modulo::delete( $primaryKey ? $uri->detalhe : $json );
                 $resultMethod = Msg::HEADER_DELETE_OK;
 
                 break;
@@ -152,8 +152,8 @@ class Area
 
                 // Mostra os dados do usuário da URI ou, caso não especificado, pega todos
                 Msg::api( [
-                    'get'     => ( isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe ) )
-                        ? $modulo::getId( $uri->getCaminho()->detalhe )
+                    'get'     => ( isset( $uri->detalhe ) && ! empty( $uri->detalhe ) )
+                        ? $modulo::getId( $uri->detalhe )
                         : $modulo::get(),
                     'detalhe' => Query::getLog( false )
                 ] );
