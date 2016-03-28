@@ -30,7 +30,7 @@ class Config
             'pass' => ''
         ],
 
-        // Dados para API de Testes
+        // Dados para API
         'api'    => [
             'user' => 'admin',
             'pass' => 'admin'
@@ -48,10 +48,10 @@ class Config
         // É local?
         if ( ( new Uri() )->eLocal() )
             // Retorna as configurações locais do sistema
-            return (object) self::$dbData[ 'local' ];
+            return self::$dbData[ 'local' ];
 
         // Retorna as configurações do módulo
-        return (object) self::$dbData[ 'system' ];
+        return self::$dbData[ 'system' ];
     }
 
     /**
@@ -63,10 +63,10 @@ class Config
         // É local?
         if ( ( new Uri() )->eLocal() )
             // Retorna as configurações locais do sistema
-            return (object) self::$dbData[ 'api' ];
+            return self::$dbData[ 'api' ];
 
         // Retorna as configurações do módulo do sistema.
         // ATENÇÃO! Troque essa parte pelos dados do seu BD para maior segurança.
-        return (object) self::$dbData[ 'api' ];
+        return self::$dbData[ 'api' ];
     }
 }

@@ -353,20 +353,15 @@ class Usuarios implements IModel
     public static function setConn()
     {
         // Efetua a conexão apenas uma vez no BD
-        if ( ! self::$conn ) {
-            // Pega os dados do BD
-            $bdData = Config::getBdData();
-            // Encontrados?
-            if ( isset( $bdData->bd, $bdData->host, $bdData->user, $bdData->pass ) ) {
+        if ( is_null(self::$conn) ) {
                 self::$conn = new Connection(
-                    $bdData->bd,
-                    $bdData->host,
-                    $bdData->user,
-                    $bdData->pass
+                    Config::getBdData()['bd'],
+                    Config::getBdData()['host'],
+                    Config::getBdData()['user'],
+                    Config::getBdData()['pass']
                 );
 
                 Query::setConn( self::$conn );
-            }
         }
     }
 

@@ -32,17 +32,17 @@ class CreateTables
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic( Config::getAPIData()->user, Config::getAPIData()->pass ) || $uri->getMethod() != 'POST' )
+        if ( ! Auth::basic( Config::getAPIData()['user'], Config::getAPIData()['pass'] ) || $uri->getMethod() != 'POST' )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         // É pra apagar as tabelas antes de criá-las?
         $drop = true;
 
         $conn = new Connection(
-            Config::getBdData()->bd,
-            Config::getBdData()->host,
-            Config::getBdData()->user,
-            Config::getBdData()->pass
+            Config::getBdData()['bd'],
+            Config::getBdData()['host'],
+            Config::getBdData()['user'],
+            Config::getBdData()['pass']
         );
 
         // Iniciando registro de tabelas
