@@ -1,31 +1,31 @@
 <?php
 /**
- * Area de Testes
+ * API simples (Auth Basic)
  *
- * Testa o CRUD nas tabelas homologadas (Auth Basic). Exemplos:
+ * Testa o CRUD nas tabelas homologadas. Exemplos:
  *  Read
- *      GET /teste/{tabela}[?limit=9999&offset=0]
- *      GET /teste/{tabela}/{primaryKey}
+ *      GET /api/{tabela}[?limit=9999&offset=0]
+ *      GET /api/{tabela}/{primaryKey}
  *
  *  Create
- *      POST /teste/{tabela}
+ *      POST /api/{tabela}
  *          Body: "{tabela}": [ { "campo1": "valor", "campo2": "valor" } ]
  *
  *  Update
- *      PUT /teste/{tabela}
+ *      PUT /api/{tabela}
  *          Body: "{tabela}": { "{primaryKey}": { "campo1": "valor", "campo2": "valor" } }
  *
  *  Delete
- *      DELETE /teste/{tabela}
+ *      DELETE /api/{tabela}
  *          Body: ["{primaryKey}", "{primaryKey}"]
  *
- *      DELETE /teste/{tabela}/{primaryKey}
+ *      DELETE /api/{tabela}/{primaryKey}
  *
  * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2015
  */
 
-namespace Testes;
+namespace API;
 
 use
     Config\Uri,

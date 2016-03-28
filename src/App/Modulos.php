@@ -26,8 +26,8 @@ class Modulos
     private static $modulos = [
         # 404
         '404'          => '\Control\NotExisting',
-        # Área de Testes
-        'teste'        => '\Testes\Area',
+        # API Area
+        'api'          => '\API\Area',
         # Cria as tabelas do sistema (API with Auth Basic)
         'createtables' => '\Control\CreateTables',
 
@@ -50,7 +50,7 @@ class Modulos
     private static $modulosSemSeguranca = [
         '404',
         'createtables',
-        'teste',
+        'api',
         'login',
         '',
         'home',

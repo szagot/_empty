@@ -67,8 +67,8 @@ Contém também dois conjuntos separados especificos para o controle de IO do BD
 
 - **DataBaseTables**: Formato das tabelas. Indica qual o tipo e tamanho de cada campo e garante um controle melhor sobre o CRUD executado com a tabela correspondente em _DataBaseModel_.
 
->       src/Testes
+>       src/API
 
-Área de testes. É acessada através da uri de base `/teste/{recurso}`
+API simples (Auth Basic). É acessada através da uri de base `/api/{tabela}`
 
-Os recursos permitidos para testes são gerenciados nela mesma.
+As tabelas são gerenciadas nela mesma, sendo que a operação (CRUD) é definido pelo método (GET, POST, PUT e DELETE)
