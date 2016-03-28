@@ -14,9 +14,26 @@ interface IModel
     /**
      * Retorna os registros da tabela
      *
+     * @param int $limit
+     * @param int $offset
+     *
      * @return array
      */
-    public static function get();
+    public static function get( $limit = null, $offset = null );
+
+    /**
+     * Seta o limite da pesquisa
+     *
+     * @param int $limit
+     */
+    public static function setLimit( $limit );
+
+    /**
+     * Seta o offset da pesquisa
+     *
+     * @param int $offset
+     */
+    public static function setOffset( $offset );
 
     /**
      * Insere um ou mais registros na tabela.
@@ -41,6 +58,7 @@ interface IModel
 
     /**
      * Apaga um ou mais registros
+     *
      * @param array $ids Este parametro deve conter o filtro para deleção do registro
      *
      * @return mixed

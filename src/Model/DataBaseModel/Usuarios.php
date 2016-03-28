@@ -22,44 +22,49 @@ class Usuarios implements IModel
 
     private static
         $conn,
-        $usuarios,
+        $records,
+        $limit = 99999,
+        $offset = 0,
         $erros = [ ],
         $registrosAfetados = 0;
 
-    /**
-     * @param string|null $nick Pega apenas o usuário com o nick selecionado
-     *
-     * @return array
-     */
-    public static function get( $nick = null )
+    public static function get( $limit = null, $offset = null )
     {
-        if ( is_null( self::$usuarios ) ) {
+        if ( is_null( $limit ) )
+            $limit = self::$limit;
+        if ( is_null( $offset ) )
+            $offset = self::$offset;
+
+        if ( is_null( self::$records ) || $limit != self::$limit || $offset != self::$offset ) {
             self::setConn();
-            self::$usuarios = Query::exec( 'SELECT * FROM Usuarios ORDER BY nome' );
-        }
-
-        // Nick informado?
-        if ( ! is_null( $nick ) ) {
-            foreach ( self::get() as $user )
-                // Encontrou o nick pesquisado?
-                if ( isset( $user[ 'nick' ] ) && $user[ 'nick' ] == $nick )
-                    return $user;
-
-            // Não encontrou o nick
-            return [ ];
+            self::$records = Query::exec( "SELECT * FROM Usuarios ORDER BY nome LIMIT {$limit} OFFSET {$offset}" );
+            self::setLimit( $limit );
+            self::setOffset( $offset );
         }
 
         // Retorna todos os usuários
-        return self::$usuarios;
+        return self::$records;
     }
 
     /**
-     * Pega apenas os usuários ativos
+     * Pega apenas o Id especificado
+     *
+     * @param $nick
+     *
+     * @return array|object
+     */
+    public static function getId( $nick )
+    {
+        self::setConn();
+        return Query::exec( 'SELECT * FROM Usuarios WHERE nick = :nick', [ 'nick' => $nick ] )[0];
+    }
+
+    /**
+     * Pega apenas os Ativos
      *
      * @return array
      */
-    public
-    static function getActive()
+    public static function getActive()
     {
         $tempUsers = [ ];
         foreach ( self::get() as $user )
@@ -70,12 +75,11 @@ class Usuarios implements IModel
     }
 
     /**
-     * Pega apenas os usuários inativos
+     * Pega apenas os Inativos
      *
      * @return array
      */
-    public
-    static function getInactive()
+    public static function getInactive()
     {
         $tempUsers = [ ];
         foreach ( self::get() as $user )
@@ -83,6 +87,18 @@ class Usuarios implements IModel
                 $tempUsers[] = $user;
 
         return $tempUsers;
+    }
+
+    public static function setLimit( $limit )
+    {
+        if ( $limit > 0 )
+            self::$limit = (int) $limit;
+    }
+
+    public static function setOffset( $offset )
+    {
+        if ( $offset >= 0 )
+            self::$offset = (int) $offset;
     }
 
     public static function insert( $records = [ ] )
@@ -107,14 +123,14 @@ class Usuarios implements IModel
             }
 
             // Verifica se há algum erro na informação de dados
-            if( $record->getErro() != '' ) {
+            if ( $record->getErro() != '' ) {
                 self::$erros[] = $record->getErro();
 
                 continue;
             }
 
             // Verifica se o usuário já existe
-            $testUser = self::get( $record->getNick() );
+            $testUser = self::getId( $record->getNick() );
             if ( isset( $testUser[ 'nick' ] ) ) {
                 self::$erros[] = "Já existe um usuário com o nick {$record->getNick()}";
 
@@ -147,13 +163,14 @@ class Usuarios implements IModel
             self::$registrosAfetados = (int) Query::getLog( true )[ 'rowsAffected' ];
 
             // Se foi cadastrado, pega usuários novamente
-            self::$usuarios = null;
+            self::$records = null;
             self::get();
 
             return true;
         }
 
         self::$erros[] = "Nenhum registro cadastrado";
+
         return false;
     }
 
@@ -178,14 +195,14 @@ class Usuarios implements IModel
             }
 
             // Verifica se há algum erro na informação de dados
-            if( $record->getErro() != '' ) {
+            if ( $record->getErro() != '' ) {
                 self::$erros[] = $record->getErro();
 
                 continue;
             }
 
             // Verifica se o usuário buscado existe
-            $updateUser = self::get( $nick );
+            $updateUser = self::getId( $nick );
             if ( ! isset( $updateUser[ 'nick' ] ) ) {
                 self::$erros[] = "O nick {$nick} informado não existe.";
 
@@ -195,7 +212,7 @@ class Usuarios implements IModel
             // Verifica se o novo nick já não existe, no caso de ser solicitada alteração de nick
             if ( $nick != $record->getNick() ) {
                 // Verifica se o usuário já existe
-                $testUser = self::get( $record->getNick() );
+                $testUser = self::getId( $record->getNick() );
                 if ( isset( $testUser[ 'nick' ] ) ) {
                     self::$erros[] = "Já existe um usuário com o nick {$record->getNick()}";
 
@@ -242,7 +259,7 @@ class Usuarios implements IModel
 
         // Se houve alteração, pega usuários novamente
         if ( self::$registrosAfetados > 0 ) {
-            self::$usuarios = null;
+            self::$records = null;
             self::get();
         }
 
@@ -268,7 +285,7 @@ class Usuarios implements IModel
         $where = '';
         foreach ( $nicks as $index => $nick ) {
             // Verifica se o usuário existe
-            $deleteUser = self::get( $nick );
+            $deleteUser = self::getId( $nick );
             if ( ! isset( $deleteUser[ 'nick' ] ) ) {
                 self::$erros[] = "O nick {$nick} informado não existe.";
 
@@ -294,7 +311,7 @@ class Usuarios implements IModel
 
         // Se houve alteração, pega usuários novamente
         if ( self::$registrosAfetados > 0 ) {
-            self::$usuarios = null;
+            self::$records = null;
             self::get();
         }
 
@@ -312,7 +329,7 @@ class Usuarios implements IModel
     public static function validaSenha( $senha, $nick )
     {
         // Verifica se o usuário e a senha batem
-        $user = self::get( $nick );
+        $user = self::getId( $nick );
 
         return isset( $user[ 'senha' ] ) && $user[ 'senha' ] == Auth::hash( $senha ) && $user[ 'ativo' ] == self::ATIVO;
     }

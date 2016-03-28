@@ -4,7 +4,7 @@
  *
  * Testa o CRUD nas tabelas homologadas (Auth Basic). Exemplos:
  *  Read
- *      GET /teste/{tabela}
+ *      GET /teste/{tabela}[?limit=9999&offset=0]
  *      GET /teste/{tabela}/{primaryKey}
  *
  *  Create
@@ -144,11 +144,19 @@ class Area
 
             // Teste de listagem
             default:
+                // Tem paginação?
+                if ( $uri->getParam( 'limit' ) )
+                    $modulo::setLimit( $uri->getParam( 'limit' ) );
+                if ( $uri->getParam( 'offset' ) )
+                    $modulo::setOffset( $uri->getParam( 'offset' ) );
+
                 // Mostra os dados do usuário da URI ou, caso não especificado, pega todos
-                Msg::api( $modulo::get(
-                    ( isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe ) )
-                        ? $uri->getCaminho()->detalhe : null
-                ) );
+                Msg::api( [
+                    'get'     => ( isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe ) )
+                        ? $modulo::getId( $uri->getCaminho()->detalhe )
+                        : $modulo::get(),
+                    'detalhe' => Query::getLog( false )
+                ] );
         }
 
         // Emite a saída da execução
