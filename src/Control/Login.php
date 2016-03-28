@@ -38,8 +38,10 @@ class Login
         if ( $uri->getMethod() == 'POST' && $uri->getParam( 'user' ) && $uri->getParam( 'pass' ) ) {
             // Senha válida?
             if ( Usuarios::validaSenha( $uri->getParam( 'pass' ), $uri->getParam( 'user' ) ) ) {
+                // Marca sessão como logado
                 $sessao->logado = true;
-                $sessao->user = Usuarios::get( $uri->getParam( 'user' ) );
+                // Salva os dados do usuário logado na sessão
+                $sessao->user = Usuarios::getId( $uri->getParam( 'user' ) );
 
                 self::retornaRaiz( $uri );
 
