@@ -3,10 +3,12 @@
  * Controle de autorização do sistema.
  * Inclui verificação de Auth Basic para API's
  *
- * @author    Daniel Bispo <szagot@gmail.com>
+ * @author Daniel Bispo <szagot@gmail.com>
  */
 
 namespace App;
+
+use Model\DataBaseModel\Usuarios;
 
 class Auth
 {
@@ -83,12 +85,9 @@ class Auth
     /**
      * Verifica se o acesso via Auth Basic é permitido
      *
-     * @param string $user Usuário Válido
-     * @param string $pass Senha Válida
-     *
      * @return bool
      */
-    public static function basic( $user, $pass )
+    public static function basic()
     {
         // Verificando dados de autenticação
         $username =
@@ -107,10 +106,7 @@ class Auth
 
         endif;
 
-        // Grava usuário e senha no formato RESTful BASIC
-        $autenticidadeCodificada = md5( strtolower( $user ) . ':' . $pass );
-
-        return ( $username == $user && $password == $pass );
+        return ( Usuarios::validaSenha( $username, $password ) );
     }
 
 }

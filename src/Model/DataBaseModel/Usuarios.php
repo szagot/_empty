@@ -56,7 +56,8 @@ class Usuarios implements IModel
     public static function getId( $nick )
     {
         self::setConn();
-        return Query::exec( 'SELECT * FROM Usuarios WHERE nick = :nick', [ 'nick' => $nick ] )[0];
+
+        return Query::exec( 'SELECT * FROM Usuarios WHERE nick = :nick', [ 'nick' => $nick ] )[ 0 ];
     }
 
     /**
@@ -326,7 +327,7 @@ class Usuarios implements IModel
      *
      * @return boolean
      */
-    public static function validaSenha( $senha, $nick )
+    public static function validaSenha( $nick, $senha )
     {
         // Verifica se o usuário e a senha batem
         $user = self::getId( $nick );
@@ -349,19 +350,18 @@ class Usuarios implements IModel
         return self::$registrosAfetados;
     }
 
-
     public static function setConn()
     {
         // Efetua a conexão apenas uma vez no BD
-        if ( is_null(self::$conn) ) {
-                self::$conn = new Connection(
-                    Config::getBdData()['bd'],
-                    Config::getBdData()['host'],
-                    Config::getBdData()['user'],
-                    Config::getBdData()['pass']
-                );
+        if ( is_null( self::$conn ) ) {
+            self::$conn = new Connection(
+                Config::getBdData()[ 'bd' ],
+                Config::getBdData()[ 'host' ],
+                Config::getBdData()[ 'user' ],
+                Config::getBdData()[ 'pass' ]
+            );
 
-                Query::setConn( self::$conn );
+            Query::setConn( self::$conn );
         }
     }
 

@@ -91,7 +91,7 @@ if ( $get != '' ) {
         // Embeleza o JSon
         req.jsonConvert = function ( json ) {
             var makeReturn = '';
-            if ( (typeof json).match( /(array|object)/i ) ) {
+            if ( json != null && (typeof json).match( /(array|object)/i ) ) {
                 var eArray = false;
                 for ( var pos in json ) {
                     eArray = pos.match( /^[0-9]+$/ );
@@ -112,7 +112,7 @@ if ( $get != '' ) {
                 var tipo      = 'string',
                     jsonTeste = '@' + json;
 
-                if ( jsonTeste == '@' )
+                if ( json == null )
                     tipo = 'null';
                 else if ( jsonTeste.match( /^@true$/i ) )
                     tipo = 'boolean true';
@@ -177,7 +177,7 @@ if ( $get != '' ) {
                                 + btoa( method + '§' + url + '§' + user + '§' + pass + '§'
                                     + '/* Body muito longo. Limite: 2000 caracteres */' );
 
-                        req.lastJson = req.stripHTML(JSON.stringify( data ));
+                        req.lastJson = req.stripHTML( JSON.stringify( data ) );
 
                         $return.html(
                             '<h3>URL:</h3><a class="btn bloco" href="' + requisicao + '">' + requisicao + '</a>'
@@ -450,7 +450,7 @@ if ( $get != '' ) {
 
 <form id="api">
     <div class="bloco url">
-        <label class="campo little">
+        <label class="campo little" title="method">
             <select id="method">
                 <option <?= ( $req == '' || $reqValues[ 0 ] == 'GET' ) ? 'selected' : '' ?>>GET</option>
                 <option <?= ( $reqValues[ 0 ] == 'POST' ) ? 'selected' : '' ?>>POST</option>
@@ -459,21 +459,21 @@ if ( $get != '' ) {
                 <option <?= ( $reqValues[ 0 ] == 'PATCH' ) ? 'selected' : '' ?>>PATCH</option>
             </select>
         </label>
-        <label class="campo big"><input type="text" id="url"
-                                        value="<?= isset( $reqValues[ 1 ] ) ? $reqValues[ 1 ] : '' ?>"
-                                        placeholder="Recurso"></label>
+        <label class="campo big" title="URI"><input type="text" id="url"
+                                                    value="<?= isset( $reqValues[ 1 ] ) ? $reqValues[ 1 ] : '' ?>"
+                                                    placeholder="Recurso"></label>
     </div>
     <div class="bloco auth">
-        <label class="campo middle"><input type="text" id="user"
-                                           value="<?= isset( $reqValues[ 2 ] ) ? $reqValues[ 2 ] : '' ?>"
-                                           placeholder="Basic Auth User ID"></label>
-        <label class="campo middle"><input type="text" id="pass"
-                                           value="<?= isset( $reqValues[ 3 ] ) ? $reqValues[ 3 ] : '' ?>"
-                                           placeholder="Basic Auth Pass"></label>
+        <label class="campo middle" title="Basic Auth User ID"><input type="password" id="user"
+                                                                      value="<?= isset( $reqValues[ 2 ] ) ? $reqValues[ 2 ] : '' ?>"
+                                                                      placeholder="Basic Auth User ID"></label>
+        <label class="campo middle" title="Basic Auth Pass"><input type="password" id="pass"
+                                                                   value="<?= isset( $reqValues[ 3 ] ) ? $reqValues[ 3 ] : '' ?>"
+                                                                   placeholder="Basic Auth Pass"></label>
     </div>
     <div class="bloco body">
         <label class="campo">
-            <textarea id="body" placeholder="Body da Requisição (JSON)" onkeydown="
+            <textarea id="body" title="Body da Requisição (JSON)" placeholder="Body da Requisição (JSON)" onkeydown="
                 // Acrescentando TAB
                 var e = event || evt;
                 var charCode = e.which || e.keyCode;

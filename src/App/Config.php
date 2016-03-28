@@ -28,12 +28,6 @@ class Config
             'host' => 'localhost',
             'user' => '',
             'pass' => ''
-        ],
-
-        // Dados para API
-        'api'    => [
-            'user' => 'admin',
-            'pass' => 'admin'
         ]
 
     ];
@@ -52,21 +46,5 @@ class Config
 
         // Retorna as configurações do módulo
         return self::$dbData[ 'system' ];
-    }
-
-    /**
-     * Retorna os dados para acesso Auth Basic
-     * @return object
-     */
-    public static function getAPIData()
-    {
-        // É local?
-        if ( ( new Uri() )->eLocal() )
-            // Retorna as configurações locais do sistema
-            return self::$dbData[ 'api' ];
-
-        // Retorna as configurações do módulo do sistema.
-        // ATENÇÃO! Troque essa parte pelos dados do seu BD para maior segurança.
-        return self::$dbData[ 'api' ];
     }
 }

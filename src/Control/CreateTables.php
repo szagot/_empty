@@ -11,10 +11,10 @@ namespace Control;
 use Config\Uri,
     App\Msg,
     App\Auth,
+    App\Config,
     Conn\Connection,
     Conn\CreateTable,
-    App\Config;
-use Conn\Query;
+    Conn\Query;
 
 class CreateTables
 {
@@ -32,17 +32,17 @@ class CreateTables
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic( Config::getAPIData()['user'], Config::getAPIData()['pass'] ) || $uri->getMethod() != 'POST' )
+        if ( ! Auth::basic() || $uri->getMethod() != 'POST' )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         // É pra apagar as tabelas antes de criá-las?
         $drop = true;
 
         $conn = new Connection(
-            Config::getBdData()['bd'],
-            Config::getBdData()['host'],
-            Config::getBdData()['user'],
-            Config::getBdData()['pass']
+            Config::getBdData()[ 'bd' ],
+            Config::getBdData()[ 'host' ],
+            Config::getBdData()[ 'user' ],
+            Config::getBdData()[ 'pass' ]
         );
 
         // Iniciando registro de tabelas
@@ -55,7 +55,7 @@ class CreateTables
             // Criando a tabela
             $newTable = new $pathTable;
             foreach ( $newTable->getFields() as $fieldName => $fieldProp ) {
-                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'length' ], $fieldProp['defaultValue'] );
+                $tabela->addField( $fieldName, $fieldProp[ 'type' ], $fieldProp[ 'length' ], $fieldProp[ 'defaultValue' ] );
                 // É chave primária?
                 if ( $fieldProp[ 'primaryKey' ] )
                     $tabela->setPrimaryKey( $fieldName, $fieldProp[ 'increment' ] );
@@ -76,8 +76,8 @@ class CreateTables
             // Deu erro?
             if ( $msg !== true )
                 Msg::api( [
-                    'msg'    => $msg,
-                    'data'   => Query::getLog()
+                    'msg'  => $msg,
+                    'data' => Query::getLog()
                 ], Msg::HEADER_DADOS_INVALIDOS );
 
             // Tem registros iniciais?
@@ -87,16 +87,16 @@ class CreateTables
 
                 if ( ! $pathModel::insert( $initialRecords ) )
                     Msg::api( [
-                        'msg'    => $pathModel::getErros(),
-                        'data'   => Query::getLog()
+                        'msg'  => $pathModel::getErros(),
+                        'data' => Query::getLog()
                     ], Msg::HEADER_DADOS_INVALIDOS );
             }
         }
 
         // Tabelas criadas
         Msg::api( [
-            'msg'    => 'Tabelas Criadas',
-            'data'   => Query::getLog()
+            'msg'  => 'Tabelas Criadas',
+            'data' => Query::getLog()
         ] );
 
     }

@@ -50,7 +50,7 @@ class Area
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic( Config::getAPIData()['user'], Config::getAPIData()['pass'] ) )
+        if ( ! Auth::basic() )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         if ( ! in_array( strtolower( $uri->opcao ), self::$modulosHomologados ) )

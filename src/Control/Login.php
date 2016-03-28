@@ -37,7 +37,7 @@ class Login
         $erros = '';
         if ( $uri->getMethod() == 'POST' && $uri->getParam( 'user' ) && $uri->getParam( 'pass' ) ) {
             // Senha válida?
-            if ( Usuarios::validaSenha( $uri->getParam( 'pass' ), $uri->getParam( 'user' ) ) ) {
+            if ( Usuarios::validaSenha( $uri->getParam( 'user' ), $uri->getParam( 'pass' ) ) ) {
                 // Marca sessão como logado
                 $sessao->logado = true;
                 // Salva os dados do usuário logado na sessão
