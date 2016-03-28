@@ -2,6 +2,25 @@
 /**
  * Area de Testes
  *
+ * Testa o CRUD nas tabelas homologadas (Auth Basic). Exemplos:
+ *  Read
+ *      GET /teste/{tabela}
+ *      GET /teste/{tabela}/{primaryKey}
+ *
+ *  Create
+ *      POST /teste/{tabela}
+ *          Body: "{tabela}": [ { "campo1": "valor", "campo2": "valor" } ]
+ *
+ *  Update
+ *      PUT /teste/{tabela}
+ *          Body: "{tabela}": { "{primaryKey}": { "campo1": "valor", "campo2": "valor" } }
+ *
+ *  Delete
+ *      DELETE /teste/{tabela}
+ *          Body: ["{primaryKey}", "{primaryKey}"]
+ *
+ *      DELETE /teste/{tabela}/{primaryKey}
+ *
  * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2015
  */
@@ -13,13 +32,16 @@ use
     App\Msg,
     Conn\Query,
     App\Config,
-    App\Auth,
-    Model\DataBaseModel\Usuarios,
-    Model\DataBaseTables\Usuarios as TUsuarios;
+    App\Auth;
 
 
 class Area
 {
+    /** @var array Tabelas permitidas para testes. Para anular os testes, bas remover ou comentar a linha */
+    private static $modulosHomologados = [
+        'usuarios',
+    ];
+
     /**
      * Testa os módulos do sistema
      *
@@ -31,112 +53,109 @@ class Area
         if ( ! Auth::basic( Config::getAPIData()->user, Config::getAPIData()->pass ) )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
-        switch ( strtolower( $uri->getUri()->opcao ) ) {
-            // Testando tabela de Usuarios
-            case 'usuarios':
-                self::testUsuarios( $uri );
-                break;
+        if ( ! in_array( strtolower( $uri->getUri()->opcao ), self::$modulosHomologados ) )
+            Msg::api( ':P', Msg::HEADER_DADOS_INVALIDOS );
 
-            // Nenhum teste válido selecionado
-            default:
-                Msg::api( ':P', Msg::HEADER_DADOS_INVALIDOS );
-        }
+        self::testAPI( $uri );
     }
 
     /**
-     * Testa tabela de usuários
-     *      Modelo de GET:
-     *      http://localhost/_empty/_testes/api_test.php?req=R0VUpy9fZW1wdHkvdGVzdGUvdXN1YXJpb3Onc3phZ290QGdtYWlsLmNvbadENXAxZDNypw==
-     *
-     *      Modelo de GET especificando user:
-     *      http://localhost/_empty/_testes/api_test.php?req=R0VUpy9fZW1wdHkvdGVzdGUvdXN1YXJpb3Mvc3phZ290p3N6YWdvdEBnbWFpbC5jb22nRDVwMWQzcqc=
-     *
-     *      Modelo de POST:
-     *      http://localhost/_empty/_testes/api_test.php?req=UE9TVKcvX2VtcHR5L3Rlc3RlL3VzdWFyaW9zp3N6YWdvdEBnbWFpbC5jb22nRDVwMWQzcqd7InVzdWFyaW9zIjpbeyJuaWNrIjoidGVzdGUiLCJub21lIjoiS2FtaWxlIFDtbWVudGEiLCJwYXNzIjoidGVzdGUiLCJhdGl2byI6MX0seyJuaWNrIjoidGVzdGUyIiwibm9tZSI6Ik91dHJvIFRlc3RlIiwicGFzcyI6InRlc3RlIn1dfQ==
-     *
-     *      Modelo de PUT:
-     *      http://localhost/_empty/_testes/api_test.php?req=UFVUpy9fZW1wdHkvdGVzdGUvdXN1YXJpb3Onc3phZ290QGdtYWlsLmNvbadENXAxZDNyp3sidXN1YXJpb3MiOnsia2FtaWxlIjp7Im5pY2siOiJrYW1pbGUiLCJub21lIjoiS2FtaWxlIFBpbWVudGEiLCJwYXNzIjoidGVzdGFuZG8iLCJhdGl2byI6MX0sInRlc3RlIjp7Im5pY2siOiJ0ZXN0ZSIsIm5vbWUiOiJPdXRybyBUZXN0ZSJ9fX0=
-     *
-     *      Modelo de DELETE:
-     *      http://localhost/_empty/_testes/api_test.php?req=REVMRVRFpy9fZW1wdHkvdGVzdGUvdXN1YXJpb3Onc3phZ290QGdtYWlsLmNvbadENXAxZDNyp1sidGVzdGUiLCJ0ZXN0ZTIiXQ==
-     *
-     *      Modelo de DELETE especificando 1 nick apenas:
-     *      http://localhost/_empty/_testes/api_test.php?req=REVMRVRFpy9fZW1wdHkvdGVzdGUvdXN1YXJpb3MvdGVzdGWnc3phZ290QGdtYWlsLmNvbadENXAxZDNypw==
+     * Testa CRUD nas tabelas homologadas
      *
      * @param Uri $uri
      */
-    private static function testUsuarios( Uri $uri )
+    private static function testAPI( Uri $uri )
     {
+        $set = strtolower( $uri->getUri()->opcao );
+        $modulo = 'Model\DataBaseModel\\' . ucwords( $set );
+        $moduloT = 'Model\DataBaseTables\\' . ucwords( $set );
+
         switch ( $uri->getMethod() ) {
             // Teste de inserção
             case 'POST':
                 // Pega o body
-                $usuarios = $uri->getBody();
+                $json = $uri->getBody();
 
                 // Dados informados?
-                if ( ! isset( $usuarios->usuarios ) || count( $usuarios->usuarios ) == 0 )
-                    Msg::api( 'Informe ao menos 1 usuário para ser inserido', Msg::HEADER_DADOS_INVALIDOS );
+                if ( ! isset( $json->$set ) || count( $json->$set ) == 0 )
+                    Msg::api( 'Informe ao menos 1 registro para ser inserido', Msg::HEADER_DADOS_INVALIDOS );
 
                 // Monta array com os dados no formato TUsuarios
-                $users = [ ];
-                foreach ( $usuarios->usuarios as $user )
-                    if ( isset( $user->nick ) )
-                        $users[] = new TUsuarios( $user->nick, $user->nome, $user->pass, $user->ativo );
+                $records = [ ];
+                foreach ( $json->$set as $index => $record ) {
+                    $records[ $index ] = new $moduloT();
+                    foreach ( $record as $field => $value ) {
+                        $funcao = 'set' . ucwords( $field );
+                        // Garante existencia de metodo
+                        if ( method_exists( $records[ $index ], $funcao ) )
+                            $records[ $index ]->$funcao( $value );
+                    }
+                }
 
                 // Insere os usuários e dá o retorno
-                $result = Usuarios::insert( $users );
-                Msg::api( Usuarios::getErros( false ), $result ? Msg::HEADER_POST_OK : Msg::HEADER_DADOS_INVALIDOS );
+                $result = $modulo::insert( $records );
+                $resultMethod = Msg::HEADER_POST_OK;
                 break;
 
             // Teste de update
             case 'PUT':
             case 'PATH':
                 // Pega o body
-                $usuarios = $uri->getBody();
+                $json = $uri->getBody();
 
                 // Dados informados?
-                if ( ! isset( $usuarios->usuarios ) || count( $usuarios->usuarios ) == 0 )
+                if ( ! isset( $json->$set ) || count( $json->$set ) == 0 )
                     Msg::api( 'Informe ao menos 1 usuário para ser alterado', Msg::HEADER_DADOS_INVALIDOS );
 
                 // Monta array com os dados no formato TUsuarios
-                $users = [ ];
-                foreach ( $usuarios->usuarios as $search => $user )
-                    if ( isset( $user->nick ) && is_string( $search ) )
-                        $users[ $search ] = new TUsuarios( $user->nick, $user->nome, $user->pass, $user->ativo );
+                $records = [ ];
+                foreach ( $json->$set as $index => $record ) {
+                    $records[ $index ] = new $moduloT();
+                    foreach ( $record as $field => $value ) {
+                        $funcao = 'set' . ucwords( $field );
+                        // Garante existencia de metodo
+                        if ( method_exists( $records[ $index ], $funcao ) )
+                            $records[ $index ]->$funcao( $value );
+                    }
+                }
 
                 // Tenta atualizar e da o retorno
-                $result = Usuarios::update( $users );
-                Msg::api( Usuarios::getErros( false ), $result ? Msg::HEADER_POST_OK : Msg::HEADER_DADOS_INVALIDOS );
+                $result = $modulo::update( $records );
+                $resultMethod = Msg::HEADER_PUT_OK;
                 break;
 
             // Teste de deleção
             case 'DELETE':
                 // Pega o body
-                $usuarios = $uri->getBody();
+                $json = $uri->getBody();
 
-                // Verifica se foi especificado um nick na URI
-                $nickEspecifico = isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe );
+                // Verifica se foi especificado um campo chave na URI
+                $primaryKey = isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe );
 
                 // Tem nick ou body?
-                if ( ! $nickEspecifico && count( $usuarios ) == 0 )
+                if ( ! $primaryKey && count( $json ) == 0 )
                     Msg::api( 'Informe o id a ser deletado na URI ou pelo menos 1 ID no body', Msg::HEADER_DADOS_INVALIDOS );
 
                 // Deleta, priorizando URI. Se URI ão contiver um nick especificado, usa o body, com vários nicks
-                $result = Usuarios::delete( $nickEspecifico ? $uri->getCaminho()->detalhe : $usuarios );
-
-                // Retorno
-                Msg::api( Usuarios::getErros( false ), $result ? Msg::HEADER_POST_OK : Msg::HEADER_DADOS_INVALIDOS );
+                $result = $modulo::delete( $primaryKey ? $uri->getCaminho()->detalhe : $json );
+                $resultMethod = Msg::HEADER_DELETE_OK;
 
                 break;
 
             // Teste de listagem
             default:
                 // Mostra os dados do usuário da URI ou, caso não especificado, pega todos
-                Msg::api( Usuarios::get(
+                Msg::api( $modulo::get(
                     ( isset( $uri->getCaminho()->detalhe ) && ! empty( $uri->getCaminho()->detalhe ) )
                         ? $uri->getCaminho()->detalhe : null
                 ) );
         }
+
+        // Emite a saída da execução
+        Msg::api( [
+            'erros'     => $modulo::getErros( false ),
+            'mysqlExec' => Query::getLog( false )
+        ], ( count( $modulo::getErros( false ) ) == 0 ) ? $resultMethod : Msg::HEADER_DADOS_INVALIDOS );
 
     }
 
