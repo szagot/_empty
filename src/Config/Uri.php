@@ -168,10 +168,10 @@ class Uri
      *
      * Retorna o caminho da URI em um array ou objeto, conforme segue:
      *  URI: http://minhapagina.com/pagina/opcao/detalhe/outros-0/outros-1/?param1=valor
-     *      $this->pagina = Página atual, primeira parte da URI
-     *      $this->opcao = Opções da página, segunda parte da uri
-     *      $this->detalhe = Detalhe da opção, terceira parte da uri
-     *      $this->outros[x] = Da quarta parte em diante é agrupado em outros
+     *      $this->getCaminho()->pagina = Página atual, primeira parte da URI
+     *      $this->getCaminho()->opcao = Opções da página, segunda parte da uri
+     *      $this->getCaminho()->detalhe = Detalhe da opção, terceira parte da uri
+     *      $this->getCaminho()->outros[x] = Da quarta parte em diante é agrupado em outros
      *
      * @param $obj boolean O retorno deve ser em Objeto ou Array? Padrão = RETORNO_OBJ
      *
@@ -238,6 +238,11 @@ class Uri
         $get = filter_input( INPUT_GET, (string) $param, $tipo );
         if ( $get )
             return $get;
+
+        // Se não encontrou pode ser um array
+        $post = filter_input( INPUT_POST, (string) $param, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+        if ( $post )
+            return $post;
 
         // Não foi encontrado o parâmetro
         return false;
