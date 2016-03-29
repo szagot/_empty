@@ -1,35 +1,36 @@
 /**
- * Fontes
- * e800 - print
- * e801 - ok
- * e802 - delete
- * e803 - logout
- * e804 - login
- * e805 - publicadores
- * e806 - designações
- * e807 - partes/seções
- * e808 - usuários
- * e809 - dashboard
- * e80a - edit
+ * Icons
+ * \e0da (&#xe0da;) - login
+ *
+ * Para gerar mais ícones em uma fonte personalizada, sugerimos a ferramenta https://icomoon.io/app
  */
 @font-face {
-    font-family: 'nvm';
-    src: url('{{raiz}}font/nvm.eot?86821376');
-    src: url('{{raiz}}font/nvm.eot?86821376#iefix') format('embedded-opentype'),
-    url('{{raiz}}font/nvm.woff?86821376') format('woff'),
-    url('{{raiz}}font/nvm.ttf?86821376') format('truetype'),
-    url('{{raiz}}font/nvm.svg?86821376#nvm') format('svg');
+    font-family: 'empty';
+    src: url('{{raiz}}fonts/empty.eot?sbtxss');
+    src: url('{{raiz}}fonts/empty.eot?sbtxss#iefix') format('embedded-opentype'),
+    url('{{raiz}}fonts/empty.ttf?sbtxss') format('truetype'),
+    url('{{raiz}}fonts/empty.woff?sbtxss') format('woff'),
+    url('{{raiz}}fonts/empty.svg?sbtxss#empty') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
-::before, ::after {
-    position: relative;
-    font-family: nvm;
-    font-weight: normal;
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'empty' !important;
+    speak: none;
     font-style: normal;
-    float: left;
-    margin-right: 10px;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Melhor renderização da fonte === */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-login:before {
+    content: "\e0da";
 }
 
 /**
@@ -52,15 +53,20 @@ body {
     font-weight: normal;
     line-height: 14px;
     color: #555;
+    background: #fdfdfd;
 }
 
 input, textarea, select, button, a.btn {
     display: inline-block;
-    font-size: 12px;
+    font-size: 14px;
     outline: none;
-    line-height: 12px;
-    height: 22px;
+    line-height: 14px;
+    padding: 5px;
     text-decoration: none;
+
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
 }
 
 img {
@@ -147,64 +153,23 @@ label {
     border: 1px inset #eee;
     background: #fafafa;
     background: linear-gradient(#fafafa, #fefefe);
-    padding: 0 5px;
     color: #666;
 }
 
 .text:focus {
     background: #fff;
+    outline: none;
+    box-shadow: inset 0 -2px #999999;
 }
 
 /** Botões */
 .btn {
     border: 1px outset #eee;
-    background: #eee;
-    color: #666;
-    padding: 5px;
+    background: #b7ffbc;
+    color: #085327;
     font-weight: bold;
     font-size: .9em;
     cursor: pointer;
-}
-
-.btn.ok {
-    background: #D3F9D8;
-    color: #107121;
-}
-
-.btn.ok::before {
-    content: '\e801';
-}
-
-.btn.login, .btn.print, .btn.edit {
-    background: #DBDCFF;
-    color: #19168E;
-}
-
-.btn.login::before {
-    content: '\e804';
-}
-
-.btn.print::before {
-    content: '\e800';
-}
-
-.btn.edit::before {
-    content: '\e80a';
-}
-
-.btn.edit.senha {
-    width: 100%;
-    text-align: left;
-}
-
-.btn.delete {
-    background: #FFF3F3;
-    color: #C31C1C;
-}
-
-.btn.delete::before {
-    content: '\e802';
-    margin-right: 0;
 }
 
 .btn:active {
