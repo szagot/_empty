@@ -50,7 +50,7 @@ class Usuarios implements IModel
     {
         self::setConn();
 
-        return (int) Query::exec( "SELECT COUNT(nick) FROM Usuarios" )[ 0 ];
+        return (int) Query::exec( "SELECT COUNT(nick) AS qtde FROM Usuarios" )[ 0 ]['qtde'];
     }
 
     /**
