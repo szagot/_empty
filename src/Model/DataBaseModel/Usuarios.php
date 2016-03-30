@@ -48,6 +48,8 @@ class Usuarios implements IModel
 
     public static function getQtdeReg()
     {
+        self::setConn();
+
         return (int) Query::exec( "SELECT COUNT(nick) FROM Usuarios" )[ 0 ];
     }
 
@@ -63,36 +65,6 @@ class Usuarios implements IModel
         self::setConn();
 
         return Query::exec( 'SELECT * FROM Usuarios WHERE nick = :nick', [ 'nick' => $nick ] )[ 0 ];
-    }
-
-    /**
-     * Pega apenas os Ativos
-     *
-     * @return array
-     */
-    public static function getActive()
-    {
-        $tempUsers = [ ];
-        foreach ( self::get() as $user )
-            if ( $user[ 'ativo' ] == 1 )
-                $tempUsers[] = $user;
-
-        return $tempUsers;
-    }
-
-    /**
-     * Pega apenas os Inativos
-     *
-     * @return array
-     */
-    public static function getInactive()
-    {
-        $tempUsers = [ ];
-        foreach ( self::get() as $user )
-            if ( $user[ 'ativo' ] != 1 )
-                $tempUsers[] = $user;
-
-        return $tempUsers;
     }
 
     public static function setLimit( $limit )
