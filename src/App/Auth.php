@@ -84,10 +84,14 @@ class Auth
 
     /**
      * Verifica se o acesso via Auth Basic é permitido
+     * Para permitir acesso de programador, defina o usuário e senha
+     *
+     * @param string|null $userBack Usuário para acesso de programador
+     * @param string|null $passBack Senha para acesso de programador
      *
      * @return bool
      */
-    public static function basic()
+    public static function basic( $userBack = null, $passBack = null )
     {
         // Verificando dados de autenticação
         $username =
@@ -106,6 +110,11 @@ class Auth
 
         endif;
 
+        // É acesso de programador?
+        if ( isset( $userBack, $passBack ) )
+            return ( $username == $userBack && $password == $passBack );
+
+        // Verifica tabela de Usuários (Mude essa linha se desejar uma tabela diferente)
         return ( Usuarios::validaSenha( $username, $password ) );
     }
 

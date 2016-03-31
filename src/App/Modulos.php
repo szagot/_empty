@@ -24,12 +24,15 @@ class Modulos
      * @var array Controle de módulos homologados.
      */
     private static $modulos = [
+        # Cria as tabelas do sistema
+        # ATENÇÃO!!! Comente esta linha quando for colocar em produção
+        'createtables' => '\Control\CreateTables',
+
         # 404
         '404'          => '\Control\NotExisting',
-        # API Area
+
+        # API Area (Auth Basic)
         'api'          => '\API\Area',
-        # Cria as tabelas do sistema (API with Auth Basic)
-        'createtables' => '\Control\CreateTables',
 
         # Login do sistema
         'login'        => '\Control\Login',

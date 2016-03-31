@@ -32,7 +32,7 @@ class CreateTables
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic() || $uri->getMethod() != 'POST' )
+        if ( ! Auth::basic( 'admin', 'admin' ) || $uri->getMethod() != 'POST' )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
         // É pra apagar as tabelas antes de criá-las?
