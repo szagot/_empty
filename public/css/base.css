@@ -61,7 +61,7 @@ input, textarea, select, button, a.btn {
     font-size: 14px;
     outline: none;
     line-height: 14px;
-    padding: 5px;
+    padding: 5px 10px;
     text-decoration: none;
 
     -webkit-border-radius:3px;
@@ -146,11 +146,12 @@ ul, li {
 label {
     color: #666;
     font-size: .9em;
+    padding-left: 1px;
 }
 
 /** Campos de texto */
 .text {
-    border: 1px inset #eee;
+    border: 1px solid #aaa;
     background: #fafafa;
     background: linear-gradient(#fafafa, #fefefe);
     color: #666;
@@ -164,18 +165,26 @@ label {
 
 /** Botões */
 .btn {
-    border: 1px outset #eee;
-    background: #b7ffbc;
-    color: #085327;
-    font-weight: bold;
-    font-size: .9em;
+    display: block;
     cursor: pointer;
+    background: #428bca;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid #357ebd;
+    text-align: left;
+    border-radius: 3px;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+    font: 14px Arial, sans-serif;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #3071a9;
 }
 
 .btn:active {
-    background: #f4f4f4;
-    background: linear-gradient(#f4f4f4, #eee);
-    border: 1px inset #eee;
-    color: #fff;
-    text-shadow: 0 0 2px rgba(0, 0, 0, .5);
+    background: #3071a9;
+    border-color: #285e8e;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
 }

@@ -13,6 +13,15 @@
     background: #f4f4f4;
     background: linear-gradient(#fafafa, #f2f2f2);
     border: 1px solid #eee;
+
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+}
+
+#loginfrm label {
+    display: block;
+    margin: 2% 0;
 }
 
 #loginfrm .text {

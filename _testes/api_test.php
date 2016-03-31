@@ -179,18 +179,21 @@ if ( $get != '' ) {
 
                         req.lastJson = req.stripHTML( JSON.stringify( data ) );
 
-                        $return.html(
-                            '<h3>URL:</h3><a class="btn bloco" href="' + requisicao + '">' + requisicao + '</a>'
+                        $return.html( ''
+                            + '<h2>Retorno da Requisição:</h2>'
+                            + '<h3>URL:</h3><a class="btn bloco" href="' + requisicao + '">' + requisicao + '</a>'
                             + '<h3>Return:</h3><textarea class="bloco" readonly>' + req.lastJson + '</textarea>'
                             + '<h3>Beautify:</h3>' + req.jsonConvert( data )
                         );
 
                     },
                     error      : function ( request, status, err ) {
-                        $return.html( req.jsonConvert( {
-                            erro  : request.responseJSON ? request.responseJSON : err,
-                            status: request.status ? request.status : status
-                        } ) );
+                        $return.html( '<h2>Retorno da Requisição:</h2>' +
+                            req.jsonConvert( {
+                                erro  : request.responseJSON ? request.responseJSON : err,
+                                status: request.status ? request.status : status
+                            } )
+                        );
                     },
                     complete   : function () {
                         req.executando = false;
@@ -491,7 +494,6 @@ if ( $get != '' ) {
         </script>
     </div>
 </form>
-<h2>Retorno da Requisição:</h2>
 <div id="return"></div>
 </body>
 </html>
