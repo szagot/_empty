@@ -32,6 +32,7 @@ class CreateTables
     public static function iniciar( Uri $uri )
     {
         // Verifica se está autorizado a executar essa ação
+        // ATENÇÃO! Mude a linha abaixo para as credenciais que deseja como acesso de programador
         if ( ! Auth::basic( 'admin', 'admin' ) || $uri->getMethod() != 'POST' )
             Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
 
@@ -48,6 +49,10 @@ class CreateTables
         // Iniciando registro de tabelas
         foreach ( self::$registeredTables as $table ) {
             $pathTable = 'Model\DataBaseTables\\' . $table;
+
+            // Se a classe não existir nem continua
+            if( ! class_exists($pathTable) )
+                continue;
 
             $tabela = new CreateTable( $conn );
             $tabela->setTable( $table, $drop );
@@ -85,11 +90,15 @@ class CreateTables
             if ( count( $initialRecords ) > 0 ) {
                 $pathModel = 'Model\DataBaseModel\\' . $table;
 
-                if ( ! $pathModel::insert( $initialRecords ) )
-                    Msg::api( [
-                        'msg'  => $pathModel::getErros(),
-                        'data' => Query::getLog()
-                    ], Msg::HEADER_DADOS_INVALIDOS );
+                // Modelo IO homologado?
+                if ( class_exists( $pathModel ) )
+
+                    // Cadastrou?
+                    if ( ! $pathModel::insert( $initialRecords ) )
+                        Msg::api( [
+                            'msg'  => $pathModel::getErros(),
+                            'data' => Query::getLog()
+                        ], Msg::HEADER_DADOS_INVALIDOS );
             }
         }
 
