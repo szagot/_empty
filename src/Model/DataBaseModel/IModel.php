@@ -22,6 +22,15 @@ interface IModel
     public static function get( $limit = null, $offset = null );
 
     /**
+     * Pega apenas o o registro especificado. Necessário para o GET específico
+     *
+     * @param mixed $id - Chave primária ou única
+     *
+     * @return array|object
+     */
+    public static function getId( $id );
+
+    /**
      * Retorna o total de registros de uma tabela
      *
      * @return int
