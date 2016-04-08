@@ -131,7 +131,7 @@ class Usuarios implements IModel
 
         if ( count( $data ) > 0 ) {
             // Tenta cadastrar os usuário
-            if ( ! Query::exec( "INSERT INTO usuarios VALUES {$query}", $data ) ) {
+            if ( ! Query::exec( "INSERT INTO Usuarios VALUES {$query}", $data ) ) {
                 self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
 
                 return false;
@@ -226,7 +226,7 @@ class Usuarios implements IModel
             }
 
             // Tenta fazer a atualização do mesmo
-            if ( ! Query::exec( "UPDATE usuarios SET {$query} WHERE nick = :search", $data ) ) {
+            if ( ! Query::exec( "UPDATE Usuarios SET {$query} WHERE nick = :search", $data ) ) {
                 self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
 
                 continue;
@@ -278,7 +278,7 @@ class Usuarios implements IModel
             return false;
 
         // Tenta deletar o(s) usuário(s)
-        if ( ! Query::exec( "DELETE FROM usuarios WHERE {$where}", $nicks ) ) {
+        if ( ! Query::exec( "DELETE FROM Usuarios WHERE {$where}", $nicks ) ) {
             self::$erros[] = Query::getLog( true )[ 'errorMsg' ];
 
             return false;
