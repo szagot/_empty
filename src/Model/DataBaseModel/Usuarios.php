@@ -163,7 +163,6 @@ class Usuarios implements IModel
             return false;
         }
 
-        $query = '';
         foreach ( $records as $nick => $record ) {
             // Valida o formato
             if ( ! $record instanceof TUsuarios ) {
