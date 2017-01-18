@@ -7,7 +7,7 @@
  */
 
 // Habilitar debug?
-$debug = false; # Coloque "true" para mostrar todos os erros
+$debug = false;
 
 ini_set( 'display_errors', $debug ? 'On' : 'Off' );
 error_reporting( $debug ? E_ALL : 0 );
