@@ -11,7 +11,7 @@
 namespace Model\DataBaseTables;
 
 
-interface IModel
+interface ITables
 {
     /**
      * Crie um variável para retorno de erros

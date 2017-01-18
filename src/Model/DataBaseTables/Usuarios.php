@@ -11,7 +11,7 @@ namespace Model\DataBaseTables;
 use App\Auth;
 use Conn\CreateTable;
 
-class Usuarios implements IModel
+class Usuarios implements ITables
 {
     const
         ATIVO = 1,
