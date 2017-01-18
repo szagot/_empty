@@ -47,16 +47,18 @@ class Area
      *
      * @param Uri $uri
      */
-    public static function iniciar( Uri $uri )
+    public static function iniciar(Uri $uri)
     {
         // Verifica se está autorizado a executar essa ação
-        if ( ! Auth::basic() )
-            Msg::api( 'Acesso Negado', Msg::HEADER_DADOS_INVALIDOS );
+        if (! Auth::basic()) {
+            Msg::api('Acesso Negado', Msg::HEADER_DADOS_INVALIDOS);
+        }
 
-        if ( ! in_array( strtolower( $uri->opcao ), self::$modulosHomologados ) )
-            Msg::api( ':P', Msg::HEADER_DADOS_INVALIDOS );
+        if (! in_array(strtolower($uri->opcao), self::$modulosHomologados)) {
+            Msg::api(':P', Msg::HEADER_DADOS_INVALIDOS);
+        }
 
-        self::testAPI( $uri );
+        self::testAPI($uri);
     }
 
     /**
@@ -64,36 +66,41 @@ class Area
      *
      * @param Uri $uri
      */
-    private static function testAPI( Uri $uri )
+    private static function testAPI(Uri $uri)
     {
-        $set = strtolower( $uri->opcao );
-        $modulo = 'Model\DataBaseModel\\' . ucwords( $set );
-        $moduloT = 'Model\DataBaseTables\\' . ucwords( $set );
+        $set = strtolower($uri->opcao);
+        /** @var \Model\DataBaseModel\IModel $modulo */
+        $modulo = 'Model\DataBaseModel\\' . ucwords($set);
+        /** @var \Model\DataBaseTables\ITables $moduloT */
+        $moduloT = 'Model\DataBaseTables\\' . ucwords($set);
 
-        switch ( $uri->getMethod() ) {
+        $resultMethod = Msg::HEADER_GET_OK;
+        switch ($uri->getMethod()) {
             // Teste de inserção
             case 'POST':
                 // Pega o body
                 $json = $uri->getBody();
 
                 // Dados informados?
-                if ( ! isset( $json->$set ) || count( $json->$set ) == 0 )
-                    Msg::api( 'Informe ao menos 1 registro para ser inserido', Msg::HEADER_DADOS_INVALIDOS );
+                if (! isset($json->$set) || count($json->$set) == 0) {
+                    Msg::api('Informe ao menos 1 registro para ser inserido', Msg::HEADER_DADOS_INVALIDOS);
+                }
 
                 // Monta array com os dados no formato TUsuarios
-                $records = [ ];
-                foreach ( $json->$set as $index => $record ) {
+                $records = [];
+                foreach ($json->$set as $index => $record) {
                     $records[ $index ] = new $moduloT();
-                    foreach ( $record as $field => $value ) {
-                        $funcao = 'set' . ucwords( $field );
+                    foreach ($record as $field => $value) {
+                        $funcao = 'set' . ucwords($field);
                         // Garante existencia de metodo
-                        if ( method_exists( $records[ $index ], $funcao ) )
-                            $records[ $index ]->$funcao( $value );
+                        if (method_exists($records[ $index ], $funcao)) {
+                            $records[ $index ]->$funcao($value);
+                        }
                     }
                 }
 
                 // Insere os usuários e dá o retorno
-                $result = $modulo::insert( $records );
+                $result = $modulo::insert($records);
                 $resultMethod = Msg::HEADER_POST_OK;
                 break;
 
@@ -104,23 +111,25 @@ class Area
                 $json = $uri->getBody();
 
                 // Dados informados?
-                if ( ! isset( $json->$set ) || count( $json->$set ) == 0 )
-                    Msg::api( 'Informe ao menos 1 usuário para ser alterado', Msg::HEADER_DADOS_INVALIDOS );
+                if (! isset($json->$set) || count($json->$set) == 0) {
+                    Msg::api('Informe ao menos 1 usuário para ser alterado', Msg::HEADER_DADOS_INVALIDOS);
+                }
 
                 // Monta array com os dados no formato TUsuarios
-                $records = [ ];
-                foreach ( $json->$set as $index => $record ) {
+                $records = [];
+                foreach ($json->$set as $index => $record) {
                     $records[ $index ] = new $moduloT();
-                    foreach ( $record as $field => $value ) {
-                        $funcao = 'set' . ucwords( $field );
+                    foreach ($record as $field => $value) {
+                        $funcao = 'set' . ucwords($field);
                         // Garante existencia de metodo
-                        if ( method_exists( $records[ $index ], $funcao ) )
-                            $records[ $index ]->$funcao( $value );
+                        if (method_exists($records[ $index ], $funcao)) {
+                            $records[ $index ]->$funcao($value);
+                        }
                     }
                 }
 
                 // Tenta atualizar e da o retorno
-                $result = $modulo::update( $records );
+                $result = $modulo::update($records);
                 $resultMethod = Msg::HEADER_PUT_OK;
                 break;
 
@@ -130,14 +139,16 @@ class Area
                 $json = $uri->getBody();
 
                 // Verifica se foi especificado um campo chave na URI
-                $primaryKey = isset( $uri->detalhe ) && ! empty( $uri->detalhe );
+                $primaryKey = isset($uri->detalhe) && ! empty($uri->detalhe);
 
                 // Tem nick ou body?
-                if ( ! $primaryKey && count( $json ) == 0 )
-                    Msg::api( 'Informe o id a ser deletado na URI ou pelo menos 1 ID no body', Msg::HEADER_DADOS_INVALIDOS );
+                if (! $primaryKey && count($json) == 0) {
+                    Msg::api('Informe o id a ser deletado na URI ou pelo menos 1 ID no body',
+                        Msg::HEADER_DADOS_INVALIDOS);
+                }
 
                 // Deleta, priorizando URI. Se URI ão contiver um nick especificado, usa o body, com vários nicks
-                $result = $modulo::delete( $primaryKey ? $uri->detalhe : $json );
+                $result = $modulo::delete($primaryKey ? $uri->detalhe : $json);
                 $resultMethod = Msg::HEADER_DELETE_OK;
 
                 break;
@@ -145,32 +156,35 @@ class Area
             // Teste de listagem
             default:
                 // Pegar só total?
-                if ( $uri->getParam( 'total' ) )
-                    Msg::api( [
+                if ($uri->getParam('total')) {
+                    Msg::api([
                         'total'   => $modulo::getQtdeReg(),
-                        'detalhe' => Query::getLog( false )
-                    ] );
+                        'detalhe' => Query::getLog(false)
+                    ]);
+                }
 
                 // Tem paginação?
-                if ( $uri->getParam( 'limit' ) )
-                    $modulo::setLimit( $uri->getParam( 'limit' ) );
-                if ( $uri->getParam( 'offset' ) )
-                    $modulo::setOffset( $uri->getParam( 'offset' ) );
+                if ($uri->getParam('limit')) {
+                    $modulo::setLimit($uri->getParam('limit'));
+                }
+                if ($uri->getParam('offset')) {
+                    $modulo::setOffset($uri->getParam('offset'));
+                }
 
                 // Mostra os dados do usuário da URI ou, caso não especificado, pega todos
-                Msg::api( [
-                    'get'     => ( isset( $uri->detalhe ) && ! empty( $uri->detalhe ) )
-                        ? $modulo::getId( $uri->detalhe )
+                Msg::api([
+                    'get'     => (isset($uri->detalhe) && ! empty($uri->detalhe))
+                        ? $modulo::getId($uri->detalhe)
                         : $modulo::get(),
-                    'detalhe' => Query::getLog( false )
-                ] );
+                    'detalhe' => Query::getLog(false)
+                ]);
         }
 
         // Emite a saída da execução
-        Msg::api( [
-            'erros'     => $modulo::getErros( false ),
-            'mysqlExec' => Query::getLog( false )
-        ], ( count( $modulo::getErros( false ) ) == 0 ) ? $resultMethod : Msg::HEADER_DADOS_INVALIDOS );
+        Msg::api([
+            'erros'     => $modulo::getErros(false),
+            'mysqlExec' => Query::getLog(false)
+        ], (count($modulo::getErros(false)) == 0) ? $resultMethod : Msg::HEADER_DADOS_INVALIDOS);
 
     }
 
